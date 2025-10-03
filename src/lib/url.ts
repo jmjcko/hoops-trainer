@@ -28,4 +28,16 @@ export function extractYouTubeId(url: string): string | null {
   }
 }
 
+// For public Facebook videos and reels, use the official plugins endpoint.
+// Private or restricted posts will not render in iframes.
+export function buildFacebookEmbedUrl(url: string): string {
+  try {
+    const encoded = encodeURIComponent(url);
+    // hide text for a cleaner player; width is responsive via CSS
+    return `https://www.facebook.com/plugins/video.php?href=${encoded}&show_text=false&height=314`;
+  } catch {
+    return url;
+  }
+}
+
 

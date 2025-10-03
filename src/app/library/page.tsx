@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { detectVideoPlatform, extractYouTubeId } from "@/lib/url";
+import { detectVideoPlatform, extractYouTubeId, buildFacebookEmbedUrl } from "@/lib/url";
 import { loadLibrary, removeVideo, upsertExercise, upsertVideo } from "@/lib/storage";
 import { ExerciseItem, LibraryState, VideoItem } from "@/types/library";
 
@@ -56,9 +56,10 @@ export default function LibraryPage() {
     return lib.videos.map(v => {
       if (v.platform === "youtube") {
         const yt = extractYouTubeId(v.url);
-        if (yt) {
-          return { id: v.id, src: `https://www.youtube.com/embed/${yt}` };
-        }
+        if (yt) return { id: v.id, src: `https://www.youtube.com/embed/${yt}` };
+      }
+      if (v.platform === "facebook") {
+        return { id: v.id, src: buildFacebookEmbedUrl(v.url) };
       }
       return { id: v.id, src: v.url };
     });

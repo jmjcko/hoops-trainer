@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { extractYouTubeId } from "@/lib/url";
+import { extractYouTubeId, buildFacebookEmbedUrl } from "@/lib/url";
 import { loadLibrary, loadPlans, savePlans } from "@/lib/storage";
 import { LibraryState, TrainingPlan, TrainingUnitItem } from "@/types/library";
 
@@ -56,7 +56,7 @@ export default function PlanBuilderPage() {
         const v = lib.videos.find(v => v.id === it.refId);
         if (!v) return null;
         const yt = extractYouTubeId(v.url);
-        const src = yt ? `https://www.youtube.com/embed/${yt}` : v.url;
+        const src = yt ? `https://www.youtube.com/embed/${yt}` : (v.platform === "facebook" ? buildFacebookEmbedUrl(v.url) : v.url);
         return (
           <div key={it.id} className="space-y-2">
             <div className="aspect-video w-full bg-black/10">

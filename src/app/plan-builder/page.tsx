@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { extractYouTubeId, buildFacebookEmbedUrl } from "@/lib/url";
+import { extractYouTubeId, buildFacebookEmbedUrl, detectVideoPlatform, getVideoSourceInfo } from "@/lib/url";
 import { loadLibrary, loadPlans, savePlans } from "@/lib/storage";
 import { LibraryState, TrainingPlan, TrainingUnitItem } from "@/types/library";
 
@@ -59,10 +59,18 @@ export default function PlanBuilderPage() {
         const src = v.platform === "youtube" && yt
           ? `https://www.youtube.com/embed/${yt}`
           : (v.platform === "facebook" ? buildFacebookEmbedUrl(v.url) : v.url);
+        const platform = detectVideoPlatform(v.url);
+        const sourceInfo = getVideoSourceInfo(platform);
         return (
           <div key={it.id} className="space-y-2">
-            <div className="aspect-video w-full bg-black/10 rounded-lg overflow-hidden">
+            <div className="aspect-video w-full bg-black/10 rounded-lg overflow-hidden relative">
               <iframe className="w-full h-full" src={src} />
+              <div className="absolute top-2 right-2">
+                <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${sourceInfo.color} ${sourceInfo.textColor} shadow-lg`}>
+                  {sourceInfo.icon}
+                  <span>{sourceInfo.name}</span>
+                </div>
+              </div>
             </div>
             <div className="flex gap-2">
               <button className="px-2 py-1 border rounded" onClick={() => moveItem(it.id, -1)}>Up</button>

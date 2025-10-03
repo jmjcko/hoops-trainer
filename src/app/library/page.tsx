@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { extractYouTubeId, buildFacebookEmbedUrl } from "@/lib/url";
+import { extractYouTubeId, buildFacebookEmbedUrl, detectVideoPlatform, getVideoSourceInfo } from "@/lib/url";
 import { loadLibrary, removeVideo, removeExercise } from "@/lib/storage";
 import { LibraryState } from "@/types/library";
 
@@ -99,10 +99,18 @@ export default function LibraryPage() {
             const src = v.platform === "youtube" && yt
               ? `https://www.youtube.com/embed/${yt}`
               : (v.platform === "facebook" ? buildFacebookEmbedUrl(v.url) : v.url);
+            const platform = detectVideoPlatform(v.url);
+            const sourceInfo = getVideoSourceInfo(platform);
             return (
               <div key={v.id} className="bg-[var(--surface)] shadow-1 rounded-lg overflow-hidden transition-all duration-200 hover:shadow-2">
-                <div className="w-full bg-black/10 h-32 md:h-36">
+                <div className="w-full bg-black/10 h-32 md:h-36 relative">
                   <iframe className="w-full h-full" src={src} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+                  <div className="absolute top-2 right-2">
+                    <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${sourceInfo.color} ${sourceInfo.textColor} shadow-lg`}>
+                      {sourceInfo.icon}
+                      <span>{sourceInfo.name}</span>
+                    </div>
+                  </div>
                 </div>
                 <div className="p-4 space-y-3">
                   <div className="flex items-center justify-between">

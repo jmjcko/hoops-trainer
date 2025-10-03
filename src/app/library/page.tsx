@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { extractYouTubeId, buildFacebookEmbedUrl, detectVideoPlatform, getVideoSourceInfo } from "@/lib/url";
-import { loadLibrary, removeVideo, removeExercise } from "@/lib/storage";
+import { loadVisibleLibrary, removeVideo, removeExercise } from "@/lib/storage";
 import { LibraryState } from "@/types/library";
 
 function createId(prefix: string = "id"): string {
@@ -15,7 +15,7 @@ export default function LibraryPage() {
   const [activeCategory, setActiveCategory] = useState<string>("all");
 
   useEffect(() => {
-    setLib(loadLibrary());
+    setLib(loadVisibleLibrary());
   }, []);
 
   const handleRemoveVideo = (id: string) => {
@@ -128,9 +128,14 @@ export default function LibraryPage() {
                 </div>
                 <div className="p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[var(--accent)] text-[var(--accent-contrast)]">
-                      {v.category || "uncategorized"}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[var(--accent)] text-[var(--accent-contrast)]">
+                        {v.category || "uncategorized"}
+                      </span>
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${v.visibility === "public" ? "bg-green-100 text-green-800" : "bg-orange-100 text-orange-800"}`}>
+                        {v.visibility === "public" ? "🌍 Public" : "🔒 Private"}
+                      </span>
+                    </div>
                     <button 
                       className="text-[var(--error)] hover:text-[var(--error)]/80 transition-colors text-sm font-medium"
                       onClick={() => handleRemoveVideo(v.id)}
@@ -158,6 +163,9 @@ export default function LibraryPage() {
                     <h3 className="font-medium text-[var(--foreground)] truncate">{e.title}</h3>
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[var(--accent)] text-[var(--accent-contrast)]">
                       {e.category || "uncategorized"}
+                    </span>
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${e.visibility === "public" ? "bg-green-100 text-green-800" : "bg-orange-100 text-orange-800"}`}>
+                      {e.visibility === "public" ? "🌍 Public" : "🔒 Private"}
                     </span>
                   </div>
                   {e.description && <p className="text-sm text-[var(--muted)] leading-relaxed">{e.description}</p>}

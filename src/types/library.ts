@@ -9,6 +9,8 @@ export interface VideoItem {
   thumbnailUrl?: string;
   durationSeconds?: number;
   notes?: string;
+  visibility: "public" | "private";
+  userId?: string; // undefined for anonymous users
 }
 
 export interface ExerciseItem {
@@ -17,6 +19,8 @@ export interface ExerciseItem {
   category?: string;
   description?: string;
   durationMinutes?: number;
+  visibility: "public" | "private";
+  userId?: string; // undefined for anonymous users
 }
 
 export interface TrainingUnitItem {

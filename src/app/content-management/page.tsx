@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { detectVideoPlatform, extractYouTubeId, validateFacebookUrlEmbeddable } from "@/lib/url";
-import { loadLibrary, upsertExercise, upsertVideo } from "@/lib/storage";
+import { loadVisibleLibrary, upsertExercise, upsertVideo } from "@/lib/storage";
 import { ExerciseItem, LibraryState, VideoItem } from "@/types/library";
 
 function createId(prefix: string = "id"): string {
@@ -13,13 +13,15 @@ export default function ContentManagementPage() {
   const [lib, setLib] = useState<LibraryState>({ videos: [], exercises: [] });
   const [videoUrl, setVideoUrl] = useState("");
   const [videoCategory, setVideoCategory] = useState("");
+  const [videoVisibility, setVideoVisibility] = useState<"public" | "private">("public");
   const [videoError, setVideoError] = useState<string | null>(null);
   const [exerciseTitle, setExerciseTitle] = useState("");
   const [exerciseDesc, setExerciseDesc] = useState("");
   const [exerciseCategory, setExerciseCategory] = useState("");
+  const [exerciseVisibility, setExerciseVisibility] = useState<"public" | "private">("public");
 
   useEffect(() => {
-    setLib(loadLibrary());
+    setLib(loadVisibleLibrary());
   }, []);
 
   const handleAddVideo = () => {
@@ -39,11 +41,13 @@ export default function ContentManagementPage() {
       url,
       platform,
       category: videoCategory.trim() || undefined,
+      visibility: videoVisibility,
     };
     const updated = upsertVideo(item);
     setLib(updated);
     setVideoUrl("");
     setVideoCategory("");
+    setVideoVisibility("public");
     setVideoError(null);
   };
 
@@ -54,12 +58,14 @@ export default function ContentManagementPage() {
       title: exerciseTitle.trim(),
       category: exerciseCategory.trim() || undefined,
       description: exerciseDesc.trim() || undefined,
+      visibility: exerciseVisibility,
     };
     const updated = upsertExercise(ex);
     setLib(updated);
     setExerciseTitle("");
     setExerciseDesc("");
     setExerciseCategory("");
+    setExerciseVisibility("public");
   };
 
   return (
@@ -82,6 +88,14 @@ export default function ContentManagementPage() {
             value={videoCategory}
             onChange={e => setVideoCategory(e.target.value)}
           />
+          <select
+            className="rounded-lg border border-[var(--border)] px-4 py-3 bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent shadow-1 transition-all duration-200"
+            value={videoVisibility}
+            onChange={e => setVideoVisibility(e.target.value as "public" | "private")}
+          >
+            <option value="public">🌍 Public</option>
+            <option value="private">🔒 Private</option>
+          </select>
           <button className="rounded-lg bg-[var(--accent)] text-[var(--accent-contrast)] px-6 py-3 font-medium shadow-2 hover:shadow-3 transition-all duration-200" onClick={handleAddVideo}>
             Add Video
           </button>
@@ -120,6 +134,14 @@ export default function ContentManagementPage() {
               value={exerciseCategory}
               onChange={e => setExerciseCategory(e.target.value)}
             />
+            <select
+              className="rounded-lg border border-[var(--border)] px-4 py-3 bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent shadow-1 transition-all duration-200"
+              value={exerciseVisibility}
+              onChange={e => setExerciseVisibility(e.target.value as "public" | "private")}
+            >
+              <option value="public">🌍 Public</option>
+              <option value="private">🔒 Private</option>
+            </select>
             <button className="rounded-lg bg-[var(--accent)] text-[var(--accent-contrast)] px-6 py-3 font-medium shadow-2 hover:shadow-3 transition-all duration-200" onClick={handleAddExercise}>
               Add Exercise
             </button>

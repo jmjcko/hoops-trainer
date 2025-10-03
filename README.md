@@ -1,4 +1,4 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+HOOPS-Trainer is a web app to collect training content (YouTube/Shorts/Facebook video URLs and written exercises) and assemble training plans.
 
 ## Getting Started
 
@@ -14,23 +14,43 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). Navigate to `/library` to add items, then `/plan-builder` to assemble a training plan.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Next.js (App Router) + TypeScript + Tailwind CSS
+- LocalStorage for persistence (no backend yet)
+- ESLint + Prettier
 
-## Learn More
+## Current Features
 
-To learn more about Next.js, take a look at the following resources:
+- Add videos by URL (YouTube, Shorts, Facebook) to Library
+- Add written exercises to Library
+- View video embeds and list exercises
+- Build, reorder, and save training plans (localStorage)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project History
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- 2025-10-03: Scaffolded Next.js app with Tailwind, ESLint, Prettier
+- 2025-10-03: Added Library page and Plan Builder with localStorage persistence
 
-## Deploy on Vercel
+## Conventions
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Source lives under `src/`. App routes in `src/app/`
+- Types in `src/types/`, helpers in `src/lib/`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## How to Continue Later
+
+See `ROADMAP.md` for next steps. High-level next tasks:
+
+- Metadata enrichment (fetch titles/thumbnails for YouTube)
+- Export/import plans (JSON), shareable links
+- Optional backend (Prisma + SQLite/Postgres) for sync
+
+## License
+
+MIT
+
+## Deploy
+
+You can deploy to Vercel or any Node.js host. No environment variables required.

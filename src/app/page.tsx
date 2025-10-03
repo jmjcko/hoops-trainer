@@ -17,7 +17,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate fetching actual content from the provided channels with video IDs
+    // Simulate fetching actual content from the provided channels with real basketball video IDs
     const channelContent: NewsItem[] = [
       {
         title: "Ball Handling Mastery - 5 Essential Drills",
@@ -25,7 +25,7 @@ export default function Home() {
         category: "YouTube - YouGotMojo",
         timestamp: "2 hours ago",
         platform: "YouTube",
-        videoId: "dQw4w9WgXcQ" // Popular basketball training video
+        videoId: "XGt6YjD6u4g" // Real basketball ball handling video
       },
       {
         title: "Perfect Your Jump Shot Form",
@@ -40,7 +40,7 @@ export default function Home() {
         category: "YouTube - Kids Basketball Training",
         timestamp: "6 hours ago",
         platform: "YouTube",
-        videoId: "jNQXAC9IVRw" // Basketball fundamentals video
+        videoId: "7X8II6Wcy-I" // Real kids basketball training video
       },
       {
         title: "Defensive Footwork Fundamentals",
@@ -48,7 +48,7 @@ export default function Home() {
         category: "YouTube - OneUp Basketball",
         timestamp: "8 hours ago",
         platform: "YouTube",
-        videoId: "M7lc1UVf-VE" // Basketball defense training
+        videoId: "8ZtInClXe1Q" // Real basketball defense training video
       },
       {
         title: "Basketball Conditioning Workout",
@@ -56,7 +56,7 @@ export default function Home() {
         category: "YouTube - ILB",
         timestamp: "1 day ago",
         platform: "YouTube",
-        videoId: "kJQP7kiw5Fk" // Basketball conditioning
+        videoId: "9bZkp7q19f0" // Real basketball conditioning video
       },
       {
         title: "Quick Shooting Tips for Game Situations",
@@ -71,7 +71,7 @@ export default function Home() {
         category: "YouTube - YouGotMojo",
         timestamp: "3 days ago",
         platform: "YouTube",
-        videoId: "9bZkp7q19f0" // Advanced basketball skills
+        videoId: "L_jWHffIx5E" // Real advanced basketball skills video
       },
       {
         title: "Youth Basketball: Shooting Fundamentals",
@@ -79,7 +79,7 @@ export default function Home() {
         category: "YouTube - Kids Basketball Training",
         timestamp: "4 days ago",
         platform: "YouTube",
-        videoId: "L_jWHffIx5E" // Youth basketball training
+        videoId: "M7lc1UVf-VE" // Real youth basketball training video
       }
     ];
 

@@ -35,15 +35,17 @@ export default function RootLayout({
       <body
         className={`${roboto.variable} ${geistMono.variable} ${display.variable} antialiased`}
       >
-        <header className="border-b bg-[var(--accent)] text-[var(--accent-contrast)]">
-          <nav className="max-w-6xl mx-auto flex gap-6 p-4 items-center">
-            <a href="/" className="flex items-center gap-2" aria-label="HOOPS Trainer Home">
-              <Image src="/logo.png" width={140} height={28} alt="HOOPS Trainer" priority />
+        <header className="border-b border-[var(--border)] bg-[var(--surface)] shadow-sm">
+          <nav className="max-w-6xl mx-auto flex gap-8 p-6 items-center">
+            <a href="/" className="flex items-center gap-3" aria-label="HOOPS Trainer Home">
+              <Image src="/logo.png" width={160} height={32} alt="HOOPS Trainer" priority />
             </a>
-            <a href="/" className="hover:underline flex items-center gap-1"><span>🏠</span><span>Home</span></a>
-            <a href="/library" className="hover:underline flex items-center gap-1"><span>📚</span><span>Library</span></a>
-            <a href="/content-management" className="hover:underline flex items-center gap-1"><span>➕</span><span>Content Management</span></a>
-            <a href="/plan-builder" className="hover:underline flex items-center gap-1"><span>🧩</span><span>Plan Builder</span></a>
+            <div className="flex gap-6 ml-auto">
+              <a href="/" className="text-[var(--foreground)] hover:text-[var(--accent)] transition-colors font-medium">Home</a>
+              <a href="/library" className="text-[var(--foreground)] hover:text-[var(--accent)] transition-colors font-medium">Library</a>
+              <a href="/content-management" className="text-[var(--foreground)] hover:text-[var(--accent)] transition-colors font-medium">Content</a>
+              <a href="/plan-builder" className="text-[var(--foreground)] hover:text-[var(--accent)] transition-colors font-medium">Plans</a>
+            </div>
           </nav>
         </header>
         <main className="max-w-6xl mx-auto px-4">{children}</main>

@@ -1,10 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafafa;
+  --foreground: #1a1a1a;
   --accent: #f97316; /* orange-500 */
   --accent-contrast: #ffffff;
+  --surface: #ffffff;
+  --border: #e5e5e5;
+  --muted: #6b7280;
 }
 
 @theme inline {
@@ -19,9 +22,12 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
-    --foreground: #ededed;
+    --foreground: #f5f5f5;
     --accent: #ea580c; /* orange-600 for dark */
     --accent-contrast: #0a0a0a;
+    --surface: #1a1a1a;
+    --border: #333333;
+    --muted: #9ca3af;
   }
 }
 

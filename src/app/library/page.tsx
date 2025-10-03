@@ -60,18 +60,21 @@ export default function LibraryPage() {
   }, [lib.exercises, activeCategory]);
 
   return (
-    <div className="max-w-5xl mx-auto w-full py-10 space-y-10">
-      <h1 className="text-2xl font-semibold">Library</h1>
+    <div className="max-w-5xl mx-auto w-full py-12 space-y-12">
+      <div className="text-center space-y-4">
+        <h1 className="text-4xl font-bold text-[var(--foreground)]">Library</h1>
+        <p className="text-[var(--muted)] text-lg">Browse and manage your training content</p>
+      </div>
 
       {/* Browsing only; adding moved to Content Management */}
 
       
 
-      <section className="space-y-3">
-        <h2 className="text-xl font-medium">Filter by category</h2>
-        <div className="flex flex-wrap gap-2">
+      <section className="space-y-4">
+        <h2 className="text-2xl font-semibold text-[var(--foreground)]">Filter by category</h2>
+        <div className="flex flex-wrap gap-3">
           <button
-            className={`px-3 py-1 rounded border ${activeCategory === "all" ? "bg-[var(--accent)] text-[var(--accent-contrast)] border-transparent" : "bg-transparent"}`}
+            className={`px-4 py-2 rounded-full border transition-all ${activeCategory === "all" ? "bg-[var(--accent)] text-[var(--accent-contrast)] border-[var(--accent)] shadow-sm" : "bg-[var(--surface)] text-[var(--foreground)] border-[var(--border)] hover:border-[var(--accent)]"}`}
             onClick={() => setActiveCategory("all")}
           >
             All
@@ -79,7 +82,7 @@ export default function LibraryPage() {
           {categories.map(cat => (
             <button
               key={cat}
-              className={`px-3 py-1 rounded border ${activeCategory === cat ? "bg-[var(--accent)] text-[var(--accent-contrast)] border-transparent" : "bg-transparent"}`}
+              className={`px-4 py-2 rounded-full border transition-all ${activeCategory === cat ? "bg-[var(--accent)] text-[var(--accent-contrast)] border-[var(--accent)] shadow-sm" : "bg-[var(--surface)] text-[var(--foreground)] border-[var(--border)] hover:border-[var(--accent)]"}`}
               onClick={() => setActiveCategory(cat)}
             >
               {cat}
@@ -88,8 +91,8 @@ export default function LibraryPage() {
         </div>
       </section>
 
-      <section className="space-y-2">
-        <h2 className="text-xl font-medium">Videos</h2>
+      <section className="space-y-6">
+        <h2 className="text-2xl font-semibold text-[var(--foreground)]">Videos</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {filteredVideos.map(v => {
             const yt = extractYouTubeId(v.url);
@@ -117,8 +120,8 @@ export default function LibraryPage() {
         </div>
       </section>
 
-      <section className="space-y-2">
-        <h2 className="text-xl font-medium">Exercises</h2>
+      <section className="space-y-6">
+        <h2 className="text-2xl font-semibold text-[var(--foreground)]">Exercises</h2>
         <ul className="space-y-2">
           {filteredExercises.map(e => (
             <li key={e.id} className="rounded border p-3">

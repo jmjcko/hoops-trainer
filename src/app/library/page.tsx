@@ -90,13 +90,13 @@ export default function LibraryPage() {
 
       <section className="space-y-2">
         <h2 className="text-xl font-medium">Videos</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {filteredVideos.map(v => {
             const yt = extractYouTubeId(v.url);
             const src = yt ? `https://www.youtube.com/embed/${yt}` : (v.platform === "facebook" ? buildFacebookEmbedUrl(v.url) : v.url);
             return (
               <div key={v.id} className="space-y-2">
-                <div className="w-full bg-black/10 h-40 md:h-48">
+                <div className="w-full bg-black/10 h-32 md:h-36">
                   <iframe className="w-full h-full" src={src} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
                 </div>
                 <div className="flex justify-between items-center">

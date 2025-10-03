@@ -17,6 +17,7 @@ export default function LibraryPage() {
   const [exerciseDesc, setExerciseDesc] = useState("");
   const [videoCategory, setVideoCategory] = useState("");
   const [exerciseCategory, setExerciseCategory] = useState("");
+  const [activeCategory, setActiveCategory] = useState<string>("all");
 
   useEffect(() => {
     setLib(loadLibrary());
@@ -79,6 +80,24 @@ export default function LibraryPage() {
       return { id: v.id, src: v.url };
     });
   }, [lib.videos]);
+
+  const categories = useMemo(() => {
+    const defaults = ["shooting", "dribbling", "passing", "defense", "conditioning", "footwork"];
+    const set = new Set<string>(defaults);
+    lib.videos.forEach(v => { if (v.category) set.add(v.category); });
+    lib.exercises.forEach(e => { if (e.category) set.add(e.category); });
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [lib]);
+
+  const filteredVideos = useMemo(() => {
+    if (activeCategory === "all") return lib.videos;
+    return lib.videos.filter(v => (v.category || "uncategorized") === activeCategory);
+  }, [lib.videos, activeCategory]);
+
+  const filteredExercises = useMemo(() => {
+    if (activeCategory === "all") return lib.exercises;
+    return lib.exercises.filter(e => (e.category || "uncategorized") === activeCategory);
+  }, [lib.exercises, activeCategory]);
 
   return (
     <div className="max-w-5xl mx-auto w-full py-10 space-y-10">
@@ -143,35 +162,67 @@ export default function LibraryPage() {
         </div>
       </section>
 
+      <section className="space-y-3">
+        <h2 className="text-xl font-medium">Filter by category</h2>
+        <div className="flex flex-wrap gap-2">
+          <button
+            className={`px-3 py-1 rounded border ${activeCategory === "all" ? "bg-[var(--accent)] text-[var(--accent-contrast)] border-transparent" : "bg-transparent"}`}
+            onClick={() => setActiveCategory("all")}
+          >
+            All
+          </button>
+          {categories.map(cat => (
+            <button
+              key={cat}
+              className={`px-3 py-1 rounded border ${activeCategory === cat ? "bg-[var(--accent)] text-[var(--accent-contrast)] border-transparent" : "bg-transparent"}`}
+              onClick={() => setActiveCategory(cat)}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      </section>
+
       <section className="space-y-2">
         <h2 className="text-xl font-medium">Videos</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {videoEmbeds.map(v => (
-            <div key={v.id} className="space-y-2">
-              <div className="aspect-video w-full bg-black/10">
-                <iframe className="w-full h-full" src={v.src} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+          {filteredVideos.map(v => {
+            const yt = extractYouTubeId(v.url);
+            const src = yt ? `https://www.youtube.com/embed/${yt}` : (v.platform === "facebook" ? buildFacebookEmbedUrl(v.url) : v.url);
+            return (
+              <div key={v.id} className="space-y-2">
+                <div className="w-full bg-black/10 h-40 md:h-48">
+                  <iframe className="w-full h-full" src={src} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-xs rounded-full px-2 py-0.5 bg-[var(--accent)] text-[var(--accent-contrast)]">
+                      {v.category || "uncategorized"}
+                    </span>
+                    <span className="text-sm text-gray-500 truncate">{v.id}</span>
+                  </div>
+                  <button className="text-red-600" onClick={() => handleRemoveVideo(v.id)}>Remove</button>
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">{v.id}</span>
-                <button className="text-red-600" onClick={() => handleRemoveVideo(v.id)}>Remove</button>
-              </div>
-            </div>
-          ))}
-          {videoEmbeds.length === 0 && <p className="text-gray-500">No videos yet.</p>}
+            );
+          })}
+          {filteredVideos.length === 0 && <p className="text-gray-500">No videos for this category.</p>}
         </div>
       </section>
 
       <section className="space-y-2">
         <h2 className="text-xl font-medium">Exercises</h2>
         <ul className="space-y-2">
-          {lib.exercises.map(e => (
+          {filteredExercises.map(e => (
             <li key={e.id} className="rounded border p-3">
-              <div className="font-medium">{e.title}</div>
-              <div className="text-xs text-gray-500">{e.category || "uncategorized"}</div>
+              <div className="flex items-center gap-2">
+                <div className="font-medium truncate">{e.title}</div>
+                <span className="text-xs rounded-full px-2 py-0.5 bg-[var(--accent)] text-[var(--accent-contrast)]">{e.category || "uncategorized"}</span>
+              </div>
               {e.description && <div className="text-sm text-gray-500">{e.description}</div>}
             </li>
           ))}
-          {lib.exercises.length === 0 && <p className="text-gray-500">No exercises yet.</p>}
+          {filteredExercises.length === 0 && <p className="text-gray-500">No exercises for this category.</p>}
         </ul>
       </section>
     </div>

@@ -32,6 +32,7 @@ export default function RootLayout({
             <span className="font-semibold tracking-wide">🏀 HOOPS Trainer</span>
             <a href="/" className="hover:underline">Home</a>
             <a href="/library" className="hover:underline">Library</a>
+            <a href="/content-management" className="hover:underline">Content Management</a>
             <a href="/plan-builder" className="hover:underline">Plan Builder</a>
           </nav>
         </header>

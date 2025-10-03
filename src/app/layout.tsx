@@ -37,7 +37,7 @@ export default function RootLayout({
         <header className="border-b bg-[var(--accent)] text-[var(--accent-contrast)]">
           <nav className="max-w-6xl mx-auto flex gap-6 p-4 items-center">
             <a href="/" className="flex items-center gap-2" aria-label="HOOPS Trainer Home">
-              <Image src="/logo.svg" width={140} height={28} alt="HOOPS Trainer" priority />
+              <Image src="/logo-dark.svg" width={140} height={28} alt="HOOPS Trainer" priority />
             </a>
             <a href="/" className="hover:underline flex items-center gap-1"><span>🏠</span><span>Home</span></a>
             <a href="/library" className="hover:underline flex items-center gap-1"><span>📚</span><span>Library</span></a>

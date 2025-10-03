@@ -136,29 +136,31 @@ export default function LibraryPage() {
 
       <section className="space-y-4">
         <h2 className="text-xl font-medium">Add exercise</h2>
-        <div className="flex flex-col gap-2 sm:flex-row">
+        <div className="flex flex-col gap-2">
           <input
-            className="flex-1 rounded border border-gray-300 px-3 py-2 bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:placeholder:text-gray-400"
+            className="rounded border border-gray-300 px-3 py-2 bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:placeholder:text-gray-400"
             placeholder="Title"
             value={exerciseTitle}
             onChange={e => setExerciseTitle(e.target.value)}
           />
-          <input
-            className="flex-1 rounded border border-gray-300 px-3 py-2 bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:placeholder:text-gray-400"
-            placeholder="Category (e.g., shooting, dribbling)"
-            list="category-options"
-            value={exerciseCategory}
-            onChange={e => setExerciseCategory(e.target.value)}
-          />
-          <input
-            className="flex-1 rounded border border-gray-300 px-3 py-2 bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:placeholder:text-gray-400"
+          <textarea
+            className="min-h-28 rounded border border-gray-300 px-3 py-2 bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:placeholder:text-gray-400"
             placeholder="Description (optional)"
             value={exerciseDesc}
             onChange={e => setExerciseDesc(e.target.value)}
           />
-          <button className="rounded bg-[var(--accent)] text-[var(--accent-contrast)] px-4 py-2" onClick={handleAddExercise}>
-            Add Exercise
-          </button>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <input
+              className="flex-1 rounded border border-gray-300 px-3 py-2 bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:placeholder:text-gray-400"
+              placeholder="Category (e.g., shooting, dribbling)"
+              list="category-options"
+              value={exerciseCategory}
+              onChange={e => setExerciseCategory(e.target.value)}
+            />
+            <button className="rounded bg-[var(--accent)] text-[var(--accent-contrast)] px-4 py-2" onClick={handleAddExercise}>
+              Add Exercise
+            </button>
+          </div>
         </div>
       </section>
 

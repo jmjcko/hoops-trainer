@@ -34,7 +34,12 @@ export interface TrainingUnitItem {
 export interface TrainingPlan {
   id: string;
   title: string;
+  description?: string;
   items: TrainingUnitItem[];
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+  userId?: string; // undefined for anonymous users
+  visibility: "public" | "private";
 }
 
 export interface LibraryState {

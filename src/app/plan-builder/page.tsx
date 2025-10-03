@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { extractYouTubeId, buildFacebookEmbedUrl, detectVideoPlatform, getVideoSourceInfo } from "@/lib/url";
-import { loadLibrary, loadPlans, savePlans } from "@/lib/storage";
+import { loadVisibleLibrary, loadVisiblePlans, upsertPlan, removePlan } from "@/lib/storage";
 import { LibraryState, TrainingPlan, TrainingUnitItem } from "@/types/library";
 
 function createId(prefix: string = "id"): string {
@@ -13,11 +13,14 @@ export default function PlanBuilderPage() {
   const [lib, setLib] = useState<LibraryState>({ videos: [], exercises: [] });
   const [plans, setPlans] = useState<TrainingPlan[]>([]);
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [visibility, setVisibility] = useState<"public" | "private">("public");
   const [currentItems, setCurrentItems] = useState<TrainingUnitItem[]>([]);
+  const [editingPlan, setEditingPlan] = useState<TrainingPlan | null>(null);
 
   useEffect(() => {
-    setLib(loadLibrary());
-    setPlans(loadPlans());
+    setLib(loadVisibleLibrary());
+    setPlans(loadVisiblePlans());
   }, []);
 
   const addVideoToPlan = (refId: string) => {
@@ -42,11 +45,49 @@ export default function PlanBuilderPage() {
 
   const savePlan = () => {
     if (!title.trim() || currentItems.length === 0) return;
-    const newPlan: TrainingPlan = { id: createId("plan"), title: title.trim(), items: currentItems };
-    const next = [newPlan, ...plans];
-    setPlans(next);
-    savePlans(next);
+    
+    const planId = editingPlan ? editingPlan.id : createId("plan");
+    const now = new Date().toISOString();
+    
+    const newPlan: TrainingPlan = {
+      id: planId,
+      title: title.trim(),
+      description: description.trim() || undefined,
+      items: currentItems,
+      createdAt: editingPlan ? editingPlan.createdAt : now,
+      updatedAt: now,
+      visibility: visibility
+    };
+    
+    const updatedPlans = upsertPlan(newPlan);
+    setPlans(updatedPlans);
+    
+    // Reset form
     setTitle("");
+    setDescription("");
+    setVisibility("public");
+    setCurrentItems([]);
+    setEditingPlan(null);
+  };
+
+  const editPlan = (plan: TrainingPlan) => {
+    setEditingPlan(plan);
+    setTitle(plan.title);
+    setDescription(plan.description || "");
+    setVisibility(plan.visibility);
+    setCurrentItems(plan.items);
+  };
+
+  const deletePlan = (id: string) => {
+    const updatedPlans = removePlan(id);
+    setPlans(updatedPlans);
+  };
+
+  const startNewPlan = () => {
+    setEditingPlan(null);
+    setTitle("");
+    setDescription("");
+    setVisibility("public");
     setCurrentItems([]);
   };
 
@@ -112,7 +153,15 @@ export default function PlanBuilderPage() {
 
   return (
     <div className="max-w-6xl mx-auto w-full py-10 space-y-10">
-      <h1 className="text-2xl font-semibold">Plan Builder</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-4xl font-bold text-[var(--foreground)]">Plan Builder</h1>
+        <button 
+          onClick={startNewPlan}
+          className="px-4 py-2 rounded-lg bg-[var(--surface)] text-[var(--foreground)] border border-[var(--border)] hover:shadow-1 transition-all duration-200"
+        >
+          New Plan
+        </button>
+      </div>
 
       <section className="space-y-4">
         <h2 className="text-xl font-medium">Assemble plan</h2>
@@ -150,26 +199,110 @@ export default function PlanBuilderPage() {
         </div>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-xl font-medium">Plan preview</h2>
-        <div className="space-y-4">{renderPreview.length ? renderPreview : <p className="text-gray-500">No items in plan.</p>}</div>
-        <div className="flex gap-2 items-center">
-          <input className="flex-1 rounded border border-gray-300 px-3 py-2 bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:placeholder:text-gray-400" placeholder="Plan title" value={title} onChange={e => setTitle(e.target.value)} />
-          <button className="rounded bg-[var(--accent)] text-[var(--accent-contrast)] px-4 py-2" onClick={savePlan}>Save Plan</button>
+      <section className="space-y-6">
+        <h2 className="text-2xl font-semibold text-[var(--foreground)]">Plan Details</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input
+            className="rounded-lg border border-[var(--border)] px-4 py-3 bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent shadow-1 transition-all duration-200"
+            placeholder="Plan title"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+          />
+          <select
+            className="rounded-lg border border-[var(--border)] px-4 py-3 bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent shadow-1 transition-all duration-200"
+            value={visibility}
+            onChange={e => setVisibility(e.target.value as "public" | "private")}
+          >
+            <option value="public">Public</option>
+            <option value="private">Private</option>
+          </select>
+        </div>
+        <textarea
+          className="w-full rounded-lg border border-[var(--border)] px-4 py-3 bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent shadow-1 transition-all duration-200 resize-none"
+          placeholder="Plan description (optional)"
+          rows={3}
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+        />
+      </section>
+
+      <section className="space-y-6">
+        <h2 className="text-2xl font-semibold text-[var(--foreground)]">Plan Preview</h2>
+        <div className="space-y-4">{renderPreview.length ? renderPreview : <p className="text-[var(--muted)]">No items in plan.</p>}</div>
+        <div className="flex gap-4 items-center">
+          <button 
+            className="rounded-lg bg-[var(--accent)] text-[var(--accent-contrast)] px-6 py-3 font-medium shadow-2 hover:shadow-3 transition-all duration-200" 
+            onClick={savePlan}
+            disabled={!title.trim() || currentItems.length === 0}
+          >
+            {editingPlan ? "Update Plan" : "Save Plan"}
+          </button>
+          {editingPlan && (
+            <button 
+              className="rounded-lg bg-[var(--surface)] text-[var(--foreground)] border border-[var(--border)] px-6 py-3 font-medium shadow-1 hover:shadow-2 transition-all duration-200" 
+              onClick={startNewPlan}
+            >
+              Cancel Edit
+            </button>
+          )}
         </div>
       </section>
 
-      <section className="space-y-2">
-        <h2 className="text-xl font-medium">Saved plans</h2>
-        <ul className="space-y-2">
+      <section className="space-y-6">
+        <h2 className="text-2xl font-semibold text-[var(--foreground)]">Saved Plans</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {plans.map(p => (
-            <li key={p.id} className="rounded border p-3">
-              <div className="font-medium">{p.title}</div>
-              <div className="text-sm text-gray-500">{p.items.length} items</div>
-            </li>
+            <div key={p.id} className="bg-[var(--surface)] shadow-1 rounded-lg p-6 transition-all duration-200 hover:shadow-2">
+              <div className="flex items-start justify-between mb-3">
+                <h3 className="font-semibold text-[var(--foreground)] truncate">{p.title}</h3>
+                <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${p.visibility === "public" ? "bg-green-100 text-green-800" : "bg-orange-100 text-orange-800"}`}>
+                  {p.visibility === "public" ? (
+                    <>
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Public
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                      Private
+                    </>
+                  )}
+                </span>
+              </div>
+              {p.description && (
+                <p className="text-sm text-[var(--muted)] mb-3 line-clamp-2">{p.description}</p>
+              )}
+              <div className="flex items-center justify-between text-sm text-[var(--muted)] mb-4">
+                <span>{p.items.length} items</span>
+                <span>{new Date(p.updatedAt).toLocaleDateString()}</span>
+              </div>
+              <div className="flex gap-2">
+                <button 
+                  className="flex-1 rounded-lg bg-[var(--accent)] text-[var(--accent-contrast)] px-4 py-2 text-sm font-medium shadow-1 hover:shadow-2 transition-all duration-200"
+                  onClick={() => editPlan(p)}
+                >
+                  Edit
+                </button>
+                <button 
+                  className="rounded-lg bg-[var(--surface)] text-[var(--error)] border border-[var(--border)] px-4 py-2 text-sm font-medium shadow-1 hover:shadow-2 transition-all duration-200"
+                  onClick={() => deletePlan(p.id)}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
           ))}
-          {plans.length === 0 && <p className="text-gray-500">No saved plans.</p>}
-        </ul>
+          {plans.length === 0 && (
+            <div className="col-span-full text-center py-12">
+              <p className="text-[var(--muted)] text-lg">No saved plans yet.</p>
+              <p className="text-[var(--muted)] text-sm mt-2">Create your first training plan above!</p>
+            </div>
+          )}
+        </div>
       </section>
     </div>
   );

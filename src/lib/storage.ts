@@ -106,9 +106,51 @@ export function loadPlans(): TrainingPlan[] {
   }
 }
 
+// Load only plans that should be visible to current user
+export function loadVisiblePlans(): TrainingPlan[] {
+  const allPlans = loadPlans();
+  const currentUserId = getCurrentUserId();
+  
+  return allPlans.filter(plan => 
+    plan.visibility === "public" || plan.userId === currentUserId
+  );
+}
+
 export function savePlans(plans: TrainingPlan[]): void {
   if (typeof window === "undefined") return;
   localStorage.setItem(PLANS_KEY, JSON.stringify(plans));
+}
+
+export function upsertPlan(plan: TrainingPlan): TrainingPlan[] {
+  const plans = loadPlans();
+  const currentUserId = getCurrentUserId();
+  const now = new Date().toISOString();
+  
+  // Ensure the plan has the current user ID, visibility, and timestamps
+  const planWithUser = {
+    ...plan,
+    userId: currentUserId,
+    visibility: plan.visibility || "public",
+    createdAt: plan.createdAt || now,
+    updatedAt: now
+  };
+  
+  const idx = plans.findIndex(p => p.id === plan.id);
+  if (idx === -1) {
+    plans.unshift(planWithUser);
+  } else {
+    plans[idx] = planWithUser;
+  }
+  
+  savePlans(plans);
+  return plans;
+}
+
+export function removePlan(id: string): TrainingPlan[] {
+  const plans = loadPlans();
+  const filtered = plans.filter(p => p.id !== id);
+  savePlans(filtered);
+  return filtered;
 }
 
 

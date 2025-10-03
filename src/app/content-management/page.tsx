@@ -64,25 +64,25 @@ export default function ContentManagementPage() {
 
   return (
     <div className="max-w-5xl mx-auto w-full py-10 space-y-10">
-      <h1 className="text-2xl font-semibold">Content Management</h1>
+      <h1 className="text-4xl font-bold text-[var(--foreground)]">Content Management</h1>
 
-      <section className="space-y-4">
-        <h2 className="text-xl font-medium">Add video by URL</h2>
-        <div className="flex flex-col gap-2 sm:flex-row">
+      <section className="space-y-6">
+        <h2 className="text-2xl font-semibold text-[var(--foreground)]">Add video by URL</h2>
+        <div className="flex flex-col gap-4 sm:flex-row">
           <input
-            className="flex-1 rounded border border-gray-300 px-3 py-2 bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:placeholder:text-gray-400"
+            className="flex-1 rounded-lg border border-[var(--border)] px-4 py-3 bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent shadow-1 transition-all duration-200"
             placeholder="Paste YouTube, Shorts, Facebook URL"
             value={videoUrl}
             onChange={e => setVideoUrl(e.target.value)}
           />
           <input
-            className="flex-1 rounded border border-gray-300 px-3 py-2 bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:placeholder:text-gray-400"
+            className="flex-1 rounded-lg border border-[var(--border)] px-4 py-3 bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent shadow-1 transition-all duration-200"
             placeholder="Category (e.g., shooting, dribbling)"
             list="category-options"
             value={videoCategory}
             onChange={e => setVideoCategory(e.target.value)}
           />
-          <button className="rounded bg-[var(--accent)] text-[var(--accent-contrast)] px-4 py-2" onClick={handleAddVideo}>
+          <button className="rounded-lg bg-[var(--accent)] text-[var(--accent-contrast)] px-6 py-3 font-medium shadow-2 hover:shadow-3 transition-all duration-200" onClick={handleAddVideo}>
             Add Video
           </button>
         </div>
@@ -97,30 +97,30 @@ export default function ContentManagementPage() {
         {videoError && <p className="text-sm text-red-600">{videoError}</p>}
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-xl font-medium">Add exercise</h2>
-        <div className="flex flex-col gap-2">
+      <section className="space-y-6">
+        <h2 className="text-2xl font-semibold text-[var(--foreground)]">Add exercise</h2>
+        <div className="flex flex-col gap-4">
           <input
-            className="rounded border border-gray-300 px-3 py-2 bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:placeholder:text-gray-400"
+            className="rounded-lg border border-[var(--border)] px-4 py-3 bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent shadow-1 transition-all duration-200"
             placeholder="Title"
             value={exerciseTitle}
             onChange={e => setExerciseTitle(e.target.value)}
           />
           <textarea
-            className="min-h-28 rounded border border-gray-300 px-3 py-2 bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:placeholder:text-gray-400"
+            className="min-h-32 rounded-lg border border-[var(--border)] px-4 py-3 bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent shadow-1 transition-all duration-200 resize-none"
             placeholder="Description (optional)"
             value={exerciseDesc}
             onChange={e => setExerciseDesc(e.target.value)}
           />
-          <div className="flex flex-col gap-2 sm:flex-row">
+          <div className="flex flex-col gap-4 sm:flex-row">
             <input
-              className="flex-1 rounded border border-gray-300 px-3 py-2 bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:placeholder:text-gray-400"
+              className="flex-1 rounded-lg border border-[var(--border)] px-4 py-3 bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent shadow-1 transition-all duration-200"
               placeholder="Category (e.g., shooting, dribbling)"
               list="category-options"
               value={exerciseCategory}
               onChange={e => setExerciseCategory(e.target.value)}
             />
-            <button className="rounded bg-[var(--accent)] text-[var(--accent-contrast)] px-4 py-2" onClick={handleAddExercise}>
+            <button className="rounded-lg bg-[var(--accent)] text-[var(--accent-contrast)] px-6 py-3 font-medium shadow-2 hover:shadow-3 transition-all duration-200" onClick={handleAddExercise}>
               Add Exercise
             </button>
           </div>

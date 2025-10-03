@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Archivo_Black } from "next/font/google";
+import { Roboto, Geist_Mono, Archivo_Black } from "next/font/google";
 import "./globals.css";
 import Image from "next/image";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const roboto = Roboto({
+  weight: ["300", "400", "500", "700"],
+  variable: "--font-roboto",
   subsets: ["latin"],
 });
 
@@ -32,12 +33,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${display.variable} antialiased`}
+        className={`${roboto.variable} ${geistMono.variable} ${display.variable} antialiased`}
       >
         <header className="border-b bg-[var(--accent)] text-[var(--accent-contrast)]">
           <nav className="max-w-6xl mx-auto flex gap-6 p-4 items-center">
             <a href="/" className="flex items-center gap-2" aria-label="HOOPS Trainer Home">
-              <Image src="/logo-dark.svg" width={140} height={28} alt="HOOPS Trainer" priority />
+              <Image src="/logo.png" width={140} height={28} alt="HOOPS Trainer" priority />
             </a>
             <a href="/" className="hover:underline flex items-center gap-1"><span>🏠</span><span>Home</span></a>
             <a href="/library" className="hover:underline flex items-center gap-1"><span>📚</span><span>Library</span></a>

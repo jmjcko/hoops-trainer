@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Archivo_Black } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -10,6 +10,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const display = Archivo_Black({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-display",
 });
 
 export const metadata: Metadata = {
@@ -25,15 +31,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${display.variable} antialiased`}
       >
         <header className="border-b bg-[var(--accent)] text-[var(--accent-contrast)]">
           <nav className="max-w-6xl mx-auto flex gap-6 p-4 items-center">
-            <span className="font-semibold tracking-wide">🏀 HOOPS Trainer</span>
-            <a href="/" className="hover:underline">Home</a>
-            <a href="/library" className="hover:underline">Library</a>
-            <a href="/content-management" className="hover:underline">Content Management</a>
-            <a href="/plan-builder" className="hover:underline">Plan Builder</a>
+            <span className="font-semibold tracking-wide" style={{ fontFamily: "var(--font-display)" }}>🏀 HOOPS Trainer</span>
+            <a href="/" className="hover:underline flex items-center gap-1"><span>🏠</span><span>Home</span></a>
+            <a href="/library" className="hover:underline flex items-center gap-1"><span>📚</span><span>Library</span></a>
+            <a href="/content-management" className="hover:underline flex items-center gap-1"><span>➕</span><span>Content Management</span></a>
+            <a href="/plan-builder" className="hover:underline flex items-center gap-1"><span>🧩</span><span>Plan Builder</span></a>
           </nav>
         </header>
         <main className="max-w-6xl mx-auto px-4">{children}</main>

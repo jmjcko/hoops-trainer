@@ -59,7 +59,7 @@ export default function PlanBuilderPage() {
         const src = yt ? `https://www.youtube.com/embed/${yt}` : (v.platform === "facebook" ? buildFacebookEmbedUrl(v.url) : v.url);
         return (
           <div key={it.id} className="space-y-2">
-            <div className="aspect-video w-full bg-black/10">
+            <div className="aspect-video w-full bg-black/10 rounded-lg overflow-hidden">
               <iframe className="w-full h-full" src={src} />
             </div>
             <div className="flex gap-2">

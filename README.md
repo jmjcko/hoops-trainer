@@ -51,6 +51,23 @@ See `ROADMAP.md` for next steps. High-level next tasks:
 
 MIT
 
+## YouTube API Setup (Optional)
+
+The homepage displays the latest basketball training videos from popular channels. By default, it uses mock data. To fetch real-time latest videos:
+
+1. See [YOUTUBE_API_SETUP.md](./YOUTUBE_API_SETUP.md) for detailed instructions
+2. Get a YouTube Data API v3 key from Google Cloud Console
+3. Add to `.env.local`:
+   ```
+   NEXT_PUBLIC_YOUTUBE_API_KEY=your_api_key_here
+   ```
+4. Restart the development server
+
+Without an API key, the app works fine but shows placeholder basketball videos instead of the actual latest videos from each channel.
+
 ## Deploy
 
-You can deploy to Vercel or any Node.js host. No environment variables required.
+You can deploy to Vercel or any Node.js host. 
+
+**Environment Variables (Optional):**
+- `NEXT_PUBLIC_YOUTUBE_API_KEY` - For fetching latest videos from YouTube channels (see YOUTUBE_API_SETUP.md)

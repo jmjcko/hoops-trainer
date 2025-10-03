@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto, Geist_Mono, Archivo_Black } from "next/font/google";
 import "./globals.css";
 import Image from "next/image";
+import Link from "next/link";
 import SessionProvider from "@/components/SessionProvider";
 
 const roboto = Roboto({
@@ -39,16 +40,16 @@ export default function RootLayout({
         <SessionProvider>
           <header className="bg-[var(--surface)] shadow-1 border-b border-[var(--border)]">
             <nav className="max-w-6xl mx-auto flex gap-8 p-6 items-center">
-              <a href="/" className="flex items-center gap-3" aria-label="HOOPS Trainer Home">
+              <Link href="/" className="flex items-center gap-3" aria-label="HOOPS Trainer Home">
                 <Image src="/logo.png" width={160} height={32} alt="HOOPS Trainer" priority />
-              </a>
+              </Link>
               <div className="flex gap-2 ml-auto">
-                <a href="/" className="flex items-center gap-2 px-4 py-3 rounded-lg bg-[var(--surface-variant)] text-[var(--foreground)] hover:bg-[var(--accent)] hover:text-[var(--accent-contrast)] transition-all duration-200 font-medium text-sm shadow-1 hover:shadow-2">
+                <Link href="/" className="flex items-center gap-2 px-4 py-3 rounded-lg bg-[var(--surface-variant)] text-[var(--foreground)] hover:bg-[var(--accent)] hover:text-[var(--accent-contrast)] transition-all duration-200 font-medium text-sm shadow-1 hover:shadow-2">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                   </svg>
                   <span>Home</span>
-                </a>
+                </Link>
                 <a href="/library" className="flex items-center gap-2 px-4 py-3 rounded-lg bg-[var(--surface-variant)] text-[var(--foreground)] hover:bg-[var(--accent)] hover:text-[var(--accent-contrast)] transition-all duration-200 font-medium text-sm shadow-1 hover:shadow-2">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />

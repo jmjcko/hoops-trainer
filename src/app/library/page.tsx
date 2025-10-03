@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { extractYouTubeId, buildFacebookEmbedUrl } from "@/lib/url";
-import { loadLibrary, removeVideo } from "@/lib/storage";
+import { loadLibrary, removeVideo, removeExercise } from "@/lib/storage";
 import { LibraryState } from "@/types/library";
 
 function createId(prefix: string = "id"): string {
@@ -20,6 +20,11 @@ export default function LibraryPage() {
 
   const handleRemoveVideo = (id: string) => {
     const updated = removeVideo(id);
+    setLib(updated);
+  };
+
+  const handleRemoveExercise = (id: string) => {
+    const updated = removeExercise(id);
     setLib(updated);
   };
 
@@ -115,9 +120,12 @@ export default function LibraryPage() {
         <ul className="space-y-2">
           {filteredExercises.map(e => (
             <li key={e.id} className="rounded border p-3">
-              <div className="flex items-center gap-2">
-                <div className="font-medium truncate">{e.title}</div>
-                <span className="text-xs rounded-full px-2 py-0.5 bg-[var(--accent)] text-[var(--accent-contrast)]">{e.category || "uncategorized"}</span>
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0 flex items-center gap-2">
+                  <div className="font-medium truncate">{e.title}</div>
+                  <span className="text-xs rounded-full px-2 py-0.5 bg-[var(--accent)] text-[var(--accent-contrast)]">{e.category || "uncategorized"}</span>
+                </div>
+                <button className="text-red-600" onClick={() => handleRemoveExercise(e.id)}>Remove</button>
               </div>
               {e.description && <div className="text-sm text-gray-500">{e.description}</div>}
             </li>

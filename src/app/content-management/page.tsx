@@ -93,8 +93,8 @@ export default function ContentManagementPage() {
             value={videoVisibility}
             onChange={e => setVideoVisibility(e.target.value as "public" | "private")}
           >
-            <option value="public">🌍 Public</option>
-            <option value="private">🔒 Private</option>
+            <option value="public">Public</option>
+            <option value="private">Private</option>
           </select>
           <button className="rounded-lg bg-[var(--accent)] text-[var(--accent-contrast)] px-6 py-3 font-medium shadow-2 hover:shadow-3 transition-all duration-200" onClick={handleAddVideo}>
             Add Video
@@ -139,8 +139,8 @@ export default function ContentManagementPage() {
               value={exerciseVisibility}
               onChange={e => setExerciseVisibility(e.target.value as "public" | "private")}
             >
-              <option value="public">🌍 Public</option>
-              <option value="private">🔒 Private</option>
+              <option value="public">Public</option>
+              <option value="private">Private</option>
             </select>
             <button className="rounded-lg bg-[var(--accent)] text-[var(--accent-contrast)] px-6 py-3 font-medium shadow-2 hover:shadow-3 transition-all duration-200" onClick={handleAddExercise}>
               Add Exercise

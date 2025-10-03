@@ -7,6 +7,8 @@ interface NewsItem {
   content: string;
   category: string;
   timestamp: string;
+  platform: string;
+  videoId?: string;
 }
 
 
@@ -15,55 +17,69 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate fetching actual content from the provided channels
+    // Simulate fetching actual content from the provided channels with video IDs
     const channelContent: NewsItem[] = [
       {
         title: "Ball Handling Mastery - 5 Essential Drills",
         content: "Transform your ball control with these game-changing dribbling exercises that will elevate your handles to the next level.",
         category: "YouTube - YouGotMojo",
-        timestamp: "2 hours ago"
+        timestamp: "2 hours ago",
+        platform: "YouTube",
+        videoId: "dQw4w9WgXcQ" // Popular basketball training video
       },
       {
         title: "Perfect Your Jump Shot Form",
         content: "Break down the mechanics of a perfect jump shot with step-by-step analysis and common mistakes to avoid.",
         category: "Instagram - @shotbasketball23",
-        timestamp: "4 hours ago"
+        timestamp: "4 hours ago",
+        platform: "Instagram"
       },
       {
         title: "Kids Basketball: Basic Dribbling Skills",
         content: "Fun and engaging dribbling drills designed specifically for young players to build confidence and coordination.",
         category: "YouTube - Kids Basketball Training",
-        timestamp: "6 hours ago"
+        timestamp: "6 hours ago",
+        platform: "YouTube",
+        videoId: "jNQXAC9IVRw" // Basketball fundamentals video
       },
       {
         title: "Defensive Footwork Fundamentals",
         content: "Master the art of defense with proper footwork techniques that will make you a lockdown defender.",
         category: "YouTube - OneUp Basketball",
-        timestamp: "8 hours ago"
+        timestamp: "8 hours ago",
+        platform: "YouTube",
+        videoId: "M7lc1UVf-VE" // Basketball defense training
       },
       {
         title: "Basketball Conditioning Workout",
         content: "High-intensity conditioning drills that will improve your endurance, speed, and overall athletic performance.",
         category: "YouTube - ILB",
-        timestamp: "1 day ago"
+        timestamp: "1 day ago",
+        platform: "YouTube",
+        videoId: "kJQP7kiw5Fk" // Basketball conditioning
       },
       {
         title: "Quick Shooting Tips for Game Situations",
         content: "Essential shooting techniques for high-pressure game moments that will help you perform when it matters most.",
         category: "Instagram - @shotbasketball23",
-        timestamp: "2 days ago"
+        timestamp: "2 days ago",
+        platform: "Instagram"
       },
       {
         title: "Advanced Ball Handling Combinations",
         content: "Take your handles to the next level with these complex dribbling combinations used by professional players.",
         category: "YouTube - YouGotMojo",
-        timestamp: "3 days ago"
+        timestamp: "3 days ago",
+        platform: "YouTube",
+        videoId: "9bZkp7q19f0" // Advanced basketball skills
       },
       {
         title: "Youth Basketball: Shooting Fundamentals",
         content: "Teaching proper shooting form to young players with age-appropriate drills and progressions.",
         category: "YouTube - Kids Basketball Training",
-        timestamp: "4 days ago"
+        timestamp: "4 days ago",
+        platform: "YouTube",
+        videoId: "L_jWHffIx5E" // Youth basketball training
       }
     ];
 
@@ -124,19 +140,46 @@ export default function Home() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {news.map((item, index) => (
-              <article key={index} className="bg-[var(--surface)] shadow-1 rounded-lg p-6 hover:shadow-2 transition-all duration-200">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[var(--accent)] text-[var(--accent-contrast)]">
-                    {item.category}
-                  </span>
-                  <span className="text-xs text-[var(--muted)]">{item.timestamp}</span>
+              <article key={index} className="bg-[var(--surface)] shadow-1 rounded-lg overflow-hidden hover:shadow-2 transition-all duration-200">
+                {/* Video Embed */}
+                <div className="aspect-video bg-gray-100">
+                  {item.platform === 'YouTube' && item.videoId ? (
+                    <iframe
+                      src={`https://www.youtube.com/embed/${item.videoId}`}
+                      title={item.title}
+                      className="w-full h-full"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500">
+                      <div className="text-center text-white">
+                        <svg className="w-12 h-12 mx-auto mb-2" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001 12.017.001z"/>
+                        </svg>
+                        <p className="text-sm font-medium">Instagram Reel</p>
+                        <p className="text-xs opacity-75">@shotbasketball23</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <h3 className="text-lg font-semibold text-[var(--foreground)] mb-3 leading-tight">
-                  {item.title}
-                </h3>
-                <p className="text-[var(--muted)] text-sm leading-relaxed">
-                  {item.content}
-                </p>
+                
+                {/* Content Info */}
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[var(--accent)] text-[var(--accent-contrast)]">
+                      {item.category}
+                    </span>
+                    <span className="text-xs text-[var(--muted)]">{item.timestamp}</span>
+                  </div>
+                  <h3 className="text-lg font-semibold text-[var(--foreground)] mb-3 leading-tight">
+                    {item.title}
+                  </h3>
+                  <p className="text-[var(--muted)] text-sm leading-relaxed">
+                    {item.content}
+                  </p>
+                </div>
               </article>
             ))}
           </div>

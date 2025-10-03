@@ -125,7 +125,7 @@ export default function PlanBuilderPage() {
         <div className="space-y-4">{renderPreview.length ? renderPreview : <p className="text-gray-500">No items in plan.</p>}</div>
         <div className="flex gap-2 items-center">
           <input className="flex-1 rounded border px-3 py-2 text-black" placeholder="Plan title" value={title} onChange={e => setTitle(e.target.value)} />
-          <button className="rounded bg-black text-white px-4 py-2" onClick={savePlan}>Save Plan</button>
+          <button className="rounded bg-[var(--accent)] text-[var(--accent-contrast)] px-4 py-2" onClick={savePlan}>Save Plan</button>
         </div>
       </section>
 

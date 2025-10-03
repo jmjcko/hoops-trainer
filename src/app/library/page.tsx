@@ -77,7 +77,7 @@ export default function LibraryPage() {
             value={videoUrl}
             onChange={e => setVideoUrl(e.target.value)}
           />
-          <button className="rounded bg-black text-white px-4 py-2" onClick={handleAddVideo}>
+          <button className="rounded bg-[var(--accent)] text-[var(--accent-contrast)] px-4 py-2" onClick={handleAddVideo}>
             Add Video
           </button>
         </div>
@@ -98,7 +98,7 @@ export default function LibraryPage() {
             value={exerciseDesc}
             onChange={e => setExerciseDesc(e.target.value)}
           />
-          <button className="rounded bg-black text-white px-4 py-2" onClick={handleAddExercise}>
+          <button className="rounded bg-[var(--accent)] text-[var(--accent-contrast)] px-4 py-2" onClick={handleAddExercise}>
             Add Exercise
           </button>
         </div>

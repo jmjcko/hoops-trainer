@@ -70,11 +70,11 @@ export default function LibraryPage() {
 
       
 
-      <section className="space-y-4">
+      <section className="space-y-6">
         <h2 className="text-2xl font-semibold text-[var(--foreground)]">Filter by category</h2>
         <div className="flex flex-wrap gap-3">
           <button
-            className={`px-4 py-2 rounded-full border transition-all ${activeCategory === "all" ? "bg-[var(--accent)] text-[var(--accent-contrast)] border-[var(--accent)] shadow-sm" : "bg-[var(--surface)] text-[var(--foreground)] border-[var(--border)] hover:border-[var(--accent)]"}`}
+            className={`px-6 py-3 rounded-full transition-all duration-200 ${activeCategory === "all" ? "bg-[var(--accent)] text-[var(--accent-contrast)] shadow-2" : "bg-[var(--surface)] text-[var(--foreground)] border border-[var(--border)] hover:shadow-1 hover:border-[var(--accent)]"}`}
             onClick={() => setActiveCategory("all")}
           >
             All
@@ -82,7 +82,7 @@ export default function LibraryPage() {
           {categories.map(cat => (
             <button
               key={cat}
-              className={`px-4 py-2 rounded-full border transition-all ${activeCategory === cat ? "bg-[var(--accent)] text-[var(--accent-contrast)] border-[var(--accent)] shadow-sm" : "bg-[var(--surface)] text-[var(--foreground)] border-[var(--border)] hover:border-[var(--accent)]"}`}
+              className={`px-6 py-3 rounded-full transition-all duration-200 ${activeCategory === cat ? "bg-[var(--accent)] text-[var(--accent-contrast)] shadow-2" : "bg-[var(--surface)] text-[var(--foreground)] border border-[var(--border)] hover:shadow-1 hover:border-[var(--accent)]"}`}
               onClick={() => setActiveCategory(cat)}
             >
               {cat}
@@ -100,18 +100,23 @@ export default function LibraryPage() {
               ? `https://www.youtube.com/embed/${yt}`
               : (v.platform === "facebook" ? buildFacebookEmbedUrl(v.url) : v.url);
             return (
-              <div key={v.id} className="space-y-2 rounded-xl border border-black/5 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-sm p-2">
-                <div className="w-full bg-black/10 h-32 md:h-36 rounded-lg overflow-hidden">
+              <div key={v.id} className="bg-[var(--surface)] shadow-1 rounded-lg overflow-hidden transition-all duration-200 hover:shadow-2">
+                <div className="w-full bg-black/10 h-32 md:h-36">
                   <iframe className="w-full h-full" src={src} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
                 </div>
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-xs rounded-full px-2 py-0.5 bg-[var(--accent)] text-[var(--accent-contrast)]">
+                <div className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[var(--accent)] text-[var(--accent-contrast)]">
                       {v.category || "uncategorized"}
                     </span>
-                    <span className="text-sm text-gray-500 truncate">{v.id}</span>
+                    <button 
+                      className="text-[var(--error)] hover:text-[var(--error)]/80 transition-colors text-sm font-medium"
+                      onClick={() => handleRemoveVideo(v.id)}
+                    >
+                      Remove
+                    </button>
                   </div>
-                  <button className="text-red-600" onClick={() => handleRemoveVideo(v.id)}>Remove</button>
+                  <div className="text-xs text-[var(--muted)] truncate">{v.id}</div>
                 </div>
               </div>
             );
@@ -124,15 +129,24 @@ export default function LibraryPage() {
         <h2 className="text-2xl font-semibold text-[var(--foreground)]">Exercises</h2>
         <ul className="space-y-2">
           {filteredExercises.map(e => (
-            <li key={e.id} className="rounded border p-3">
-              <div className="flex items-center justify-between gap-2">
-                <div className="min-w-0 flex items-center gap-2">
-                  <div className="font-medium truncate">{e.title}</div>
-                  <span className="text-xs rounded-full px-2 py-0.5 bg-[var(--accent)] text-[var(--accent-contrast)]">{e.category || "uncategorized"}</span>
+            <li key={e.id} className="bg-[var(--surface)] shadow-1 rounded-lg p-4 transition-all duration-200 hover:shadow-2">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="font-medium text-[var(--foreground)] truncate">{e.title}</h3>
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[var(--accent)] text-[var(--accent-contrast)]">
+                      {e.category || "uncategorized"}
+                    </span>
+                  </div>
+                  {e.description && <p className="text-sm text-[var(--muted)] leading-relaxed">{e.description}</p>}
                 </div>
-                <button className="text-red-600" onClick={() => handleRemoveExercise(e.id)}>Remove</button>
+                <button 
+                  className="text-[var(--error)] hover:text-[var(--error)]/80 transition-colors text-sm font-medium flex-shrink-0"
+                  onClick={() => handleRemoveExercise(e.id)}
+                >
+                  Remove
+                </button>
               </div>
-              {e.description && <div className="text-sm text-gray-500">{e.description}</div>}
             </li>
           ))}
           {filteredExercises.length === 0 && <p className="text-gray-500">No exercises for this category.</p>}

@@ -1,13 +1,21 @@
 @import "tailwindcss";
 
 :root {
+  /* Material Design Color Palette */
   --background: #fafafa;
-  --foreground: #1a1a1a;
-  --accent: #f97316; /* orange-500 */
+  --foreground: #212121;
+  --accent: #ff5722; /* Material Orange */
   --accent-contrast: #ffffff;
   --surface: #ffffff;
-  --border: #e5e5e5;
-  --muted: #6b7280;
+  --surface-variant: #f5f5f5;
+  --border: #e0e0e0;
+  --muted: #757575;
+  --primary: #2196f3;
+  --primary-dark: #1976d2;
+  --secondary: #ff9800;
+  --error: #f44336;
+  --success: #4caf50;
+  --warning: #ff9800;
 }
 
 @theme inline {
@@ -15,26 +23,22 @@
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
   --color-accent-contrast: var(--accent-contrast);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
   --font-sans: var(--font-roboto);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #f5f5f5;
-    --accent: #ea580c; /* orange-600 for dark */
-    --accent-contrast: #0a0a0a;
-    --surface: #1a1a1a;
-    --border: #333333;
-    --muted: #9ca3af;
-  }
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-roboto), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
 }
 
-body {
-  background: radial-gradient(1200px 600px at 10% -20%, color-mix(in oklab, var(--accent) 20%, transparent) 0%, transparent 60%),
-    radial-gradient(1000px 500px at 110% 20%, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 60%),
-    var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+/* Material Design Shadows */
+.shadow-1 { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+.shadow-2 { box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); }
+.shadow-3 { box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23); }
+.shadow-4 { box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22); }

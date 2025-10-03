@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { detectVideoPlatform, extractYouTubeId, buildFacebookEmbedUrl } from "@/lib/url";
+import { detectVideoPlatform, extractYouTubeId, buildFacebookEmbedUrl, validateFacebookUrlEmbeddable } from "@/lib/url";
 import { loadLibrary, removeVideo, upsertExercise, upsertVideo } from "@/lib/storage";
 import { ExerciseItem, LibraryState, VideoItem } from "@/types/library";
 
@@ -12,6 +12,7 @@ function createId(prefix: string = "id"): string {
 export default function LibraryPage() {
   const [lib, setLib] = useState<LibraryState>({ videos: [], exercises: [] });
   const [videoUrl, setVideoUrl] = useState("");
+  const [videoError, setVideoError] = useState<string | null>(null);
   const [exerciseTitle, setExerciseTitle] = useState("");
   const [exerciseDesc, setExerciseDesc] = useState("");
 
@@ -23,6 +24,13 @@ export default function LibraryPage() {
     const url = videoUrl.trim();
     if (!url) return;
     const platform = detectVideoPlatform(url);
+    if (platform === "facebook") {
+      const valid = validateFacebookUrlEmbeddable(url);
+      if (!valid.ok) {
+        setVideoError(valid.hint ? `${valid.reason} ${valid.hint}` : valid.reason);
+        return;
+      }
+    }
     const idBase = platform === "youtube" ? extractYouTubeId(url) ?? createId("yt") : createId("vid");
     const item: VideoItem = {
       id: idBase,
@@ -32,6 +40,7 @@ export default function LibraryPage() {
     const updated = upsertVideo(item);
     setLib(updated);
     setVideoUrl("");
+    setVideoError(null);
   };
 
   const handleRemoveVideo = (id: string) => {
@@ -82,6 +91,7 @@ export default function LibraryPage() {
             Add Video
           </button>
         </div>
+        {videoError && <p className="text-sm text-red-600">{videoError}</p>}
       </section>
 
       <section className="space-y-4">

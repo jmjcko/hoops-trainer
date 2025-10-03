@@ -40,4 +40,37 @@ export function buildFacebookEmbedUrl(url: string): string {
   }
 }
 
+export type FacebookValidation = { ok: true } | { ok: false; reason: string; hint?: string };
+
+export function validateFacebookUrlEmbeddable(url: string): FacebookValidation {
+  try {
+    const u = new URL(url);
+    const host = u.hostname.replace(/^www\./, "");
+    if (host.includes("fb.watch")) {
+      return {
+        ok: false,
+        reason: "Short fb.watch links cannot be embedded directly.",
+        hint: "Open the link in a browser and copy the full Facebook permalink (facebook.com/…/videos/{id} or /reel/{id} or /watch?v={id}).",
+      };
+    }
+    if (!host.includes("facebook.com")) {
+      return { ok: false, reason: "Not a Facebook URL." };
+    }
+    const path = u.pathname;
+    const hasWatchParam = u.pathname.startsWith("/watch") && Boolean(u.searchParams.get("v"));
+    const reelMatch = /\/reel\/\w+/.test(path);
+    const videosMatch = /\/videos\/(\d+)/.test(path);
+    if (hasWatchParam || reelMatch || videosMatch) {
+      return { ok: true };
+    }
+    return {
+      ok: false,
+      reason: "This doesn't look like a Facebook video permalink.",
+      hint: "Use a URL like facebook.com/{page}/videos/{video_id}, facebook.com/reel/{reel_id}, or facebook.com/watch?v={id}.",
+    };
+  } catch {
+    return { ok: false, reason: "Invalid URL." };
+  }
+}
+
 

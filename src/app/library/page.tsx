@@ -72,7 +72,7 @@ export default function LibraryPage() {
         <h2 className="text-xl font-medium">Add video by URL</h2>
         <div className="flex gap-2">
           <input
-            className="flex-1 rounded border px-3 py-2 text-black"
+            className="flex-1 rounded border border-gray-300 px-3 py-2 bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:placeholder:text-gray-400"
             placeholder="Paste YouTube, Shorts, Facebook URL"
             value={videoUrl}
             onChange={e => setVideoUrl(e.target.value)}
@@ -87,13 +87,13 @@ export default function LibraryPage() {
         <h2 className="text-xl font-medium">Add exercise</h2>
         <div className="flex flex-col gap-2 sm:flex-row">
           <input
-            className="flex-1 rounded border px-3 py-2 text-black"
+            className="flex-1 rounded border border-gray-300 px-3 py-2 bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:placeholder:text-gray-400"
             placeholder="Title"
             value={exerciseTitle}
             onChange={e => setExerciseTitle(e.target.value)}
           />
           <input
-            className="flex-1 rounded border px-3 py-2 text-black"
+            className="flex-1 rounded border border-gray-300 px-3 py-2 bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:placeholder:text-gray-400"
             placeholder="Description (optional)"
             value={exerciseDesc}
             onChange={e => setExerciseDesc(e.target.value)}

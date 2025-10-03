@@ -15,7 +15,10 @@ export function detectVideoPlatform(url: string): VideoPlatform {
 export function extractYouTubeId(url: string): string | null {
   try {
     const u = new URL(url);
-    if (u.hostname.includes("youtu.be")) {
+    const host = u.hostname.replace(/^www\./, "");
+    const isYouTubeHost = host.includes("youtube.com") || host.includes("youtu.be");
+    if (!isYouTubeHost) return null;
+    if (host.includes("youtu.be")) {
       return u.pathname.slice(1) || null;
     }
     if (u.searchParams.get("v")) return u.searchParams.get("v");

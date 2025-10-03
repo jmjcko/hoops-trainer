@@ -93,7 +93,9 @@ export default function LibraryPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {filteredVideos.map(v => {
             const yt = extractYouTubeId(v.url);
-            const src = yt ? `https://www.youtube.com/embed/${yt}` : (v.platform === "facebook" ? buildFacebookEmbedUrl(v.url) : v.url);
+            const src = v.platform === "youtube" && yt
+              ? `https://www.youtube.com/embed/${yt}`
+              : (v.platform === "facebook" ? buildFacebookEmbedUrl(v.url) : v.url);
             return (
               <div key={v.id} className="space-y-2 rounded-xl border border-black/5 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-sm p-2">
                 <div className="w-full bg-black/10 h-32 md:h-36 rounded-lg overflow-hidden">

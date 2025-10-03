@@ -56,7 +56,9 @@ export default function PlanBuilderPage() {
         const v = lib.videos.find(v => v.id === it.refId);
         if (!v) return null;
         const yt = extractYouTubeId(v.url);
-        const src = yt ? `https://www.youtube.com/embed/${yt}` : (v.platform === "facebook" ? buildFacebookEmbedUrl(v.url) : v.url);
+        const src = v.platform === "youtube" && yt
+          ? `https://www.youtube.com/embed/${yt}`
+          : (v.platform === "facebook" ? buildFacebookEmbedUrl(v.url) : v.url);
         return (
           <div key={it.id} className="space-y-2">
             <div className="aspect-video w-full bg-black/10 rounded-lg overflow-hidden">

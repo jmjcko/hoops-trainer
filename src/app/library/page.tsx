@@ -15,6 +15,8 @@ export default function LibraryPage() {
   const [videoError, setVideoError] = useState<string | null>(null);
   const [exerciseTitle, setExerciseTitle] = useState("");
   const [exerciseDesc, setExerciseDesc] = useState("");
+  const [videoCategory, setVideoCategory] = useState("");
+  const [exerciseCategory, setExerciseCategory] = useState("");
 
   useEffect(() => {
     setLib(loadLibrary());
@@ -36,11 +38,13 @@ export default function LibraryPage() {
       id: idBase,
       url,
       platform,
+      category: videoCategory.trim() || undefined,
     };
     const updated = upsertVideo(item);
     setLib(updated);
     setVideoUrl("");
     setVideoError(null);
+    setVideoCategory("");
   };
 
   const handleRemoveVideo = (id: string) => {
@@ -53,12 +57,14 @@ export default function LibraryPage() {
     const ex: ExerciseItem = {
       id: createId("ex"),
       title: exerciseTitle.trim(),
+      category: exerciseCategory.trim() || undefined,
       description: exerciseDesc.trim() || undefined,
     };
     const updated = upsertExercise(ex);
     setLib(updated);
     setExerciseTitle("");
     setExerciseDesc("");
+    setExerciseCategory("");
   };
 
   const videoEmbeds = useMemo(() => {
@@ -80,17 +86,32 @@ export default function LibraryPage() {
 
       <section className="space-y-4">
         <h2 className="text-xl font-medium">Add video by URL</h2>
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <input
             className="flex-1 rounded border border-gray-300 px-3 py-2 bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:placeholder:text-gray-400"
             placeholder="Paste YouTube, Shorts, Facebook URL"
             value={videoUrl}
             onChange={e => setVideoUrl(e.target.value)}
           />
+          <input
+            className="flex-1 rounded border border-gray-300 px-3 py-2 bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:placeholder:text-gray-400"
+            placeholder="Category (e.g., shooting, dribbling)"
+            list="category-options"
+            value={videoCategory}
+            onChange={e => setVideoCategory(e.target.value)}
+          />
           <button className="rounded bg-[var(--accent)] text-[var(--accent-contrast)] px-4 py-2" onClick={handleAddVideo}>
             Add Video
           </button>
         </div>
+        <datalist id="category-options">
+          <option value="shooting" />
+          <option value="dribbling" />
+          <option value="passing" />
+          <option value="defense" />
+          <option value="conditioning" />
+          <option value="footwork" />
+        </datalist>
         {videoError && <p className="text-sm text-red-600">{videoError}</p>}
       </section>
 
@@ -102,6 +123,13 @@ export default function LibraryPage() {
             placeholder="Title"
             value={exerciseTitle}
             onChange={e => setExerciseTitle(e.target.value)}
+          />
+          <input
+            className="flex-1 rounded border border-gray-300 px-3 py-2 bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:placeholder:text-gray-400"
+            placeholder="Category (e.g., shooting, dribbling)"
+            list="category-options"
+            value={exerciseCategory}
+            onChange={e => setExerciseCategory(e.target.value)}
           />
           <input
             className="flex-1 rounded border border-gray-300 px-3 py-2 bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent dark:bg-zinc-800 dark:text-white dark:border-zinc-700 dark:placeholder:text-gray-400"
@@ -139,6 +167,7 @@ export default function LibraryPage() {
           {lib.exercises.map(e => (
             <li key={e.id} className="rounded border p-3">
               <div className="font-medium">{e.title}</div>
+              <div className="text-xs text-gray-500">{e.category || "uncategorized"}</div>
               {e.description && <div className="text-sm text-gray-500">{e.description}</div>}
             </li>
           ))}

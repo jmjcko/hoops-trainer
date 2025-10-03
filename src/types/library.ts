@@ -4,6 +4,7 @@ export interface VideoItem {
   id: string;
   url: string;
   platform: VideoPlatform;
+  category?: string;
   title?: string;
   thumbnailUrl?: string;
   durationSeconds?: number;
@@ -13,6 +14,7 @@ export interface VideoItem {
 export interface ExerciseItem {
   id: string;
   title: string;
+  category?: string;
   description?: string;
   durationMinutes?: number;
 }

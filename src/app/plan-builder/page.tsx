@@ -98,7 +98,10 @@ export default function PlanBuilderPage() {
             <ul className="space-y-2 max-h-80 overflow-auto pr-2">
               {lib.videos.map(v => (
                 <li key={v.id} className="flex justify-between items-center rounded border p-2">
-                  <span className="truncate">{v.id}</span>
+                  <div className="min-w-0">
+                    <div className="truncate text-sm">{v.id}</div>
+                    <div className="text-xs text-gray-500">{v.category || "uncategorized"}</div>
+                  </div>
                   <button className="px-2 py-1 border rounded" onClick={() => addVideoToPlan(v.id)}>Add</button>
                 </li>
               ))}
@@ -110,7 +113,10 @@ export default function PlanBuilderPage() {
             <ul className="space-y-2 max-h-80 overflow-auto pr-2">
               {lib.exercises.map(e => (
                 <li key={e.id} className="flex justify-between items-center rounded border p-2">
-                  <span className="truncate">{e.title}</span>
+                  <div className="min-w-0">
+                    <div className="truncate">{e.title}</div>
+                    <div className="text-xs text-gray-500">{e.category || "uncategorized"}</div>
+                  </div>
                   <button className="px-2 py-1 border rounded" onClick={() => addExerciseToPlan(e.id)}>Add</button>
                 </li>
               ))}

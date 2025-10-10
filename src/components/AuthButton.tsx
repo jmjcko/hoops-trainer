@@ -2,6 +2,7 @@
 
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function AuthButton() {
   const { data: session, status } = useSession();
@@ -19,9 +20,11 @@ export default function AuthButton() {
     return (
       <div className="flex items-center gap-2 pl-3 border-l-2 border-[var(--accent)] bg-gradient-to-r from-[var(--accent)]/5 to-transparent rounded-r-lg py-1 pr-1">
         <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-gradient-to-r from-[var(--accent)]/10 to-[var(--accent)]/5 text-[var(--foreground)] text-xs border border-[var(--accent)]/20">
-          <img 
+          <Image 
             src={session.user?.image || ""} 
             alt={session.user?.name || ""} 
+            width={20}
+            height={20}
             className="w-5 h-5 rounded-full ring-1 ring-[var(--accent)]/30"
           />
           <span className="hidden sm:inline font-medium text-xs">{session.user?.name}</span>

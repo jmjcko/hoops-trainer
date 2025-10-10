@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { loadVisibleResources } from "@/lib/resource-storage";
 import { Resource } from "@/types/resource";
 
@@ -172,9 +173,11 @@ export default function Home() {
 
                 {resource.thumbnailUrl && (
                   <div className="mb-4">
-                    <img 
+                    <Image 
                       src={resource.thumbnailUrl} 
                       alt={resource.name}
+                      width={400}
+                      height={128}
                       className="w-full h-32 object-cover rounded-lg"
                     />
                   </div>

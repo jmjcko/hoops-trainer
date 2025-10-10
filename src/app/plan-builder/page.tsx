@@ -70,8 +70,6 @@ export default function PlanBuilderPage() {
     setEditingPlan(null);
   };
 
-
-
   const startNewPlan = () => {
     setEditingPlan(null);
     setTitle("");

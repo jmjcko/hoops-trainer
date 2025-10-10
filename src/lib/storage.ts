@@ -1,19 +1,27 @@
 "use client";
 
 import { ExerciseItem, LibraryState, TrainingPlan, VideoItem } from "@/types/library";
+import { getSession } from "next-auth/react";
 
 const LIBRARY_KEY = "ht_library_v1";
 const PLANS_KEY = "ht_plans_v1";
 
-// Get current user ID (for now, we'll use a simple session ID)
-function getCurrentUserId(): string | undefined {
+// Get current user ID from NextAuth session
+async function getCurrentUserId(): Promise<string | undefined> {
   if (typeof window === "undefined") return undefined;
-  let userId = sessionStorage.getItem("ht_user_id");
-  if (!userId) {
-    userId = `user_${Math.random().toString(36).slice(2, 10)}`;
-    sessionStorage.setItem("ht_user_id", userId);
+  
+  try {
+    const session = await getSession();
+    return session?.user?.email || undefined;
+  } catch {
+    // Fallback to sessionStorage for anonymous users
+    let userId = sessionStorage.getItem("ht_user_id");
+    if (!userId) {
+      userId = `anonymous_${Math.random().toString(36).slice(2, 10)}`;
+      sessionStorage.setItem("ht_user_id", userId);
+    }
+    return userId;
   }
-  return userId;
 }
 
 export function loadLibrary(): LibraryState {
@@ -28,9 +36,9 @@ export function loadLibrary(): LibraryState {
 }
 
 // Load only content that should be visible to current user
-export function loadVisibleLibrary(): LibraryState {
+export async function loadVisibleLibrary(): Promise<LibraryState> {
   const allContent = loadLibrary();
-  const currentUserId = getCurrentUserId();
+  const currentUserId = await getCurrentUserId();
   
   return {
     videos: allContent.videos.filter(v => 
@@ -47,9 +55,9 @@ export function saveLibrary(state: LibraryState): void {
   localStorage.setItem(LIBRARY_KEY, JSON.stringify(state));
 }
 
-export function upsertVideo(video: VideoItem): LibraryState {
+export async function upsertVideo(video: VideoItem): Promise<LibraryState> {
   const lib = loadLibrary();
-  const currentUserId = getCurrentUserId();
+  const currentUserId = await getCurrentUserId();
   
   // Ensure the video has the current user ID and visibility
   const videoWithUser = {
@@ -71,9 +79,9 @@ export function removeVideo(id: string): LibraryState {
   return loadLibrary();
 }
 
-export function upsertExercise(ex: ExerciseItem): LibraryState {
+export async function upsertExercise(ex: ExerciseItem): Promise<LibraryState> {
   const lib = loadLibrary();
-  const currentUserId = getCurrentUserId();
+  const currentUserId = await getCurrentUserId();
   
   // Ensure the exercise has the current user ID and visibility
   const exerciseWithUser = {
@@ -107,9 +115,9 @@ export function loadPlans(): TrainingPlan[] {
 }
 
 // Load only plans that should be visible to current user
-export function loadVisiblePlans(): TrainingPlan[] {
+export async function loadVisiblePlans(): Promise<TrainingPlan[]> {
   const allPlans = loadPlans();
-  const currentUserId = getCurrentUserId();
+  const currentUserId = await getCurrentUserId();
   
   return allPlans.filter(plan => 
     plan.visibility === "public" || plan.userId === currentUserId
@@ -121,9 +129,9 @@ export function savePlans(plans: TrainingPlan[]): void {
   localStorage.setItem(PLANS_KEY, JSON.stringify(plans));
 }
 
-export function upsertPlan(plan: TrainingPlan): TrainingPlan[] {
+export async function upsertPlan(plan: TrainingPlan): Promise<TrainingPlan[]> {
   const plans = loadPlans();
-  const currentUserId = getCurrentUserId();
+  const currentUserId = await getCurrentUserId();
   const now = new Date().toISOString();
   
   // Ensure the plan has the current user ID, visibility, and timestamps

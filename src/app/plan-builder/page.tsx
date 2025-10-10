@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { extractYouTubeId, buildFacebookEmbedUrl, detectVideoPlatform, getVideoSourceInfo } from "@/lib/url";
-import { loadVisibleLibrary, loadVisiblePlans, upsertPlan, removePlan } from "@/lib/storage";
+import { loadVisibleLibrary, upsertPlan } from "@/lib/storage";
 import { LibraryState, TrainingPlan, TrainingUnitItem } from "@/types/library";
 
 function createId(prefix: string = "id"): string {
@@ -11,7 +11,6 @@ function createId(prefix: string = "id"): string {
 
 export default function PlanBuilderPage() {
   const [lib, setLib] = useState<LibraryState>({ videos: [], exercises: [] });
-  const [plans, setPlans] = useState<TrainingPlan[]>([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [visibility, setVisibility] = useState<"public" | "private">("public");
@@ -19,8 +18,10 @@ export default function PlanBuilderPage() {
   const [editingPlan, setEditingPlan] = useState<TrainingPlan | null>(null);
 
   useEffect(() => {
-    setLib(loadVisibleLibrary());
-    setPlans(loadVisiblePlans());
+    const loadData = async () => {
+      setLib(await loadVisibleLibrary());
+    };
+    loadData();
   }, []);
 
   const addVideoToPlan = (refId: string) => {
@@ -43,7 +44,7 @@ export default function PlanBuilderPage() {
     });
   };
 
-  const savePlan = () => {
+  const savePlan = async () => {
     if (!title.trim() || currentItems.length === 0) return;
     
     const planId = editingPlan ? editingPlan.id : createId("plan");
@@ -59,8 +60,7 @@ export default function PlanBuilderPage() {
       visibility: visibility
     };
     
-    const updatedPlans = upsertPlan(newPlan);
-    setPlans(updatedPlans);
+    await upsertPlan(newPlan);
     
     // Reset form
     setTitle("");
@@ -78,10 +78,6 @@ export default function PlanBuilderPage() {
     setCurrentItems(plan.items);
   };
 
-  const deletePlan = (id: string) => {
-    const updatedPlans = removePlan(id);
-    setPlans(updatedPlans);
-  };
 
   const startNewPlan = () => {
     setEditingPlan(null);
@@ -92,45 +88,84 @@ export default function PlanBuilderPage() {
   };
 
   const renderPreview = useMemo(() => {
-    return currentItems.map(it => {
+    return currentItems.map((it, index) => {
       if (it.type === "video") {
         const v = lib.videos.find(v => v.id === it.refId);
         if (!v) return null;
-        const yt = extractYouTubeId(v.url);
-        const src = v.platform === "youtube" && yt
-          ? `https://www.youtube.com/embed/${yt}`
-          : (v.platform === "facebook" ? buildFacebookEmbedUrl(v.url) : v.url);
         const platform = detectVideoPlatform(v.url);
-        const sourceInfo = getVideoSourceInfo(platform);
+        const getPlatformIcon = (platform: string) => {
+          if (platform === "youtube") {
+            return (
+              <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+              </svg>
+            );
+          }
+          if (platform === "facebook") {
+            return (
+              <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+            );
+          }
+          return (
+            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+          );
+        };
+        const getPlatformColor = (platform: string) => {
+          if (platform === "youtube") return "bg-red-500";
+          if (platform === "facebook") return "bg-blue-600";
+          return "bg-gray-500";
+        };
         return (
-          <div key={it.id} className="space-y-2">
-            <div className="aspect-video w-full bg-black/10 rounded-lg overflow-hidden relative">
-              <iframe className="w-full h-full" src={src} />
-              <div className="absolute top-2 right-2">
-                <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${sourceInfo.color} ${sourceInfo.textColor} shadow-lg`}>
-                  {platform === "youtube" && (
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                    </svg>
-                  )}
-                  {platform === "facebook" && (
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                    </svg>
-                  )}
-                  {platform === "unknown" && (
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                  )}
-                  <span>{sourceInfo.name}</span>
+          <div key={it.id} className="bg-[var(--surface)] shadow-1 rounded-lg p-3 transition-all duration-200 hover:shadow-2">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center flex-shrink-0 text-[var(--accent-contrast)] font-bold text-sm">
+                {index + 1}
+              </div>
+              <div className={`w-6 h-6 ${getPlatformColor(platform)} rounded-full flex items-center justify-center flex-shrink-0`}>
+                {getPlatformIcon(platform)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h4 className="font-medium text-[var(--foreground)] truncate">
+                    {v.title || `${platform === "youtube" ? "YouTube" : platform === "facebook" ? "Facebook" : "Video"} Video`}
+                  </h4>
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[var(--accent)] text-[var(--accent-contrast)]">
+                    {v.category || "uncategorized"}
+                  </span>
                 </div>
               </div>
-            </div>
-            <div className="flex gap-2">
-              <button className="px-2 py-1 border rounded" onClick={() => moveItem(it.id, -1)}>Up</button>
-              <button className="px-2 py-1 border rounded" onClick={() => moveItem(it.id, 1)}>Down</button>
-              <button className="px-2 py-1 border rounded text-red-600" onClick={() => removeItem(it.id)}>Remove</button>
+              <div className="flex items-center gap-1">
+                <button 
+                  className="p-1 rounded text-[var(--muted)] hover:text-[var(--foreground)] transition-colors" 
+                  onClick={() => moveItem(it.id, -1)}
+                  disabled={index === 0}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                  </svg>
+                </button>
+                <button 
+                  className="p-1 rounded text-[var(--muted)] hover:text-[var(--foreground)] transition-colors" 
+                  onClick={() => moveItem(it.id, 1)}
+                  disabled={index === currentItems.length - 1}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                <button 
+                  className="p-1 rounded text-[var(--error)] hover:text-[var(--error)]/80 transition-colors" 
+                  onClick={() => removeItem(it.id)}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         );
@@ -138,13 +173,55 @@ export default function PlanBuilderPage() {
       const e = lib.exercises.find(e => e.id === it.refId);
       if (!e) return null;
       return (
-        <div key={it.id} className="rounded border p-3 space-y-2">
-          <div className="font-medium">{e.title}</div>
-          {e.description && <div className="text-sm text-gray-500">{e.description}</div>}
-          <div className="flex gap-2">
-            <button className="px-2 py-1 border rounded" onClick={() => moveItem(it.id, -1)}>Up</button>
-            <button className="px-2 py-1 border rounded" onClick={() => moveItem(it.id, 1)}>Down</button>
-            <button className="px-2 py-1 border rounded text-red-600" onClick={() => removeItem(it.id)}>Remove</button>
+        <div key={it.id} className="bg-[var(--surface)] shadow-1 rounded-lg p-3 transition-all duration-200 hover:shadow-2">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center flex-shrink-0 text-[var(--accent-contrast)] font-bold text-sm">
+              {index + 1}
+            </div>
+            <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <h4 className="font-medium text-[var(--foreground)] truncate">{e.title}</h4>
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[var(--accent)] text-[var(--accent-contrast)]">
+                  {e.category || "uncategorized"}
+                </span>
+              </div>
+              {e.description && (
+                <p className="text-sm text-[var(--muted)] mt-1 line-clamp-1">{e.description}</p>
+              )}
+            </div>
+            <div className="flex items-center gap-1">
+              <button 
+                className="p-1 rounded text-[var(--muted)] hover:text-[var(--foreground)] transition-colors" 
+                onClick={() => moveItem(it.id, -1)}
+                disabled={index === 0}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                </svg>
+              </button>
+              <button 
+                className="p-1 rounded text-[var(--muted)] hover:text-[var(--foreground)] transition-colors" 
+                onClick={() => moveItem(it.id, 1)}
+                disabled={index === currentItems.length - 1}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <button 
+                className="p-1 rounded text-[var(--error)] hover:text-[var(--error)]/80 transition-colors" 
+                onClick={() => removeItem(it.id)}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       );
@@ -152,9 +229,8 @@ export default function PlanBuilderPage() {
   }, [currentItems, lib]);
 
   return (
-    <div className="max-w-6xl mx-auto w-full py-10 space-y-10">
-      <div className="flex items-center justify-between">
-        <h1 className="text-4xl font-bold text-[var(--foreground)]">Plan Builder</h1>
+    <div className="max-w-6xl mx-auto w-full py-8 space-y-8">
+      <div className="flex items-center justify-end">
         <button 
           onClick={startNewPlan}
           className="px-4 py-2 rounded-lg bg-[var(--surface)] text-[var(--foreground)] border border-[var(--border)] hover:shadow-1 transition-all duration-200"
@@ -167,33 +243,113 @@ export default function PlanBuilderPage() {
         <h2 className="text-xl font-medium">Assemble plan</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <div className="text-sm text-gray-500">Videos</div>
-            <ul className="space-y-2 max-h-80 overflow-auto pr-2">
-              {lib.videos.map(v => (
-                <li key={v.id} className="flex justify-between items-center rounded border p-2">
-                  <div className="min-w-0">
-                    <div className="truncate text-sm">{v.id}</div>
-                    <div className="text-xs text-gray-500">{v.category || "uncategorized"}</div>
-                  </div>
-                  <button className="px-2 py-1 border rounded" onClick={() => addVideoToPlan(v.id)}>Add</button>
-                </li>
-              ))}
-              {lib.videos.length === 0 && <p className="text-gray-500">No videos yet.</p>}
+            <div className="text-sm text-[var(--muted)] font-medium">Videos</div>
+            <ul className="space-y-1 max-h-80 overflow-auto pr-2 pb-2">
+              {lib.videos.map(v => {
+                const platform = detectVideoPlatform(v.url);
+                const getPlatformIcon = (platform: string) => {
+                  if (platform === "youtube") {
+                    return (
+                      <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                      </svg>
+                    );
+                  }
+                  if (platform === "facebook") {
+                    return (
+                      <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                      </svg>
+                    );
+                  }
+                  return (
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  );
+                };
+                const getPlatformColor = (platform: string) => {
+                  if (platform === "youtube") return "bg-red-500";
+                  if (platform === "facebook") return "bg-blue-600";
+                  return "bg-gray-500";
+                };
+                return (
+                  <li key={v.id} className="bg-[var(--surface)] shadow-1 rounded-lg p-3 transition-all duration-200 hover:shadow-2 cursor-pointer group">
+                    <a 
+                      href={v.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="block"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-6 h-6 ${getPlatformColor(platform)} rounded-full flex items-center justify-center flex-shrink-0`}>
+                          {getPlatformIcon(platform)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-medium text-[var(--foreground)] truncate text-sm group-hover:text-[var(--accent)] transition-colors">
+                              {v.title || `${platform === "youtube" ? "YouTube" : platform === "facebook" ? "Facebook" : "Video"} Video`}
+                            </h4>
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[var(--accent)] text-[var(--accent-contrast)]">
+                              {v.category || "uncategorized"}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <svg className="w-4 h-4 text-[var(--muted)] group-hover:text-[var(--accent)] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
+                          <button 
+                            className="px-3 py-1 rounded-lg bg-[var(--accent)] text-[var(--accent-contrast)] text-sm font-medium shadow-1 hover:shadow-2 transition-all duration-200 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              addVideoToPlan(v.id);
+                            }}
+                          >
+                            Add
+                          </button>
+                        </div>
+                      </div>
+                    </a>
+                  </li>
+                );
+              })}
+              {lib.videos.length === 0 && <p className="text-[var(--muted)] text-center py-4">No videos yet.</p>}
             </ul>
           </div>
           <div className="space-y-2">
-            <div className="text-sm text-gray-500">Exercises</div>
-            <ul className="space-y-2 max-h-80 overflow-auto pr-2">
+            <div className="text-sm text-[var(--muted)] font-medium">Exercises</div>
+            <ul className="space-y-1 max-h-80 overflow-auto pr-2 pb-2">
               {lib.exercises.map(e => (
-                <li key={e.id} className="flex justify-between items-center rounded border p-2">
-                  <div className="min-w-0">
-                    <div className="truncate">{e.title}</div>
-                    <div className="text-xs text-gray-500">{e.category || "uncategorized"}</div>
+                <li key={e.id} className="bg-[var(--surface)] shadow-1 rounded-lg p-3 transition-all duration-200 hover:shadow-2 cursor-pointer group">
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-medium text-[var(--foreground)] truncate text-sm group-hover:text-[var(--accent)] transition-colors">{e.title}</h4>
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[var(--accent)] text-[var(--accent-contrast)]">
+                          {e.category || "uncategorized"}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button 
+                        className="px-3 py-1 rounded-lg bg-[var(--accent)] text-[var(--accent-contrast)] text-sm font-medium shadow-1 hover:shadow-2 transition-all duration-200 flex-shrink-0" 
+                        onClick={() => addExerciseToPlan(e.id)}
+                      >
+                        Add
+                      </button>
+                    </div>
                   </div>
-                  <button className="px-2 py-1 border rounded" onClick={() => addExerciseToPlan(e.id)}>Add</button>
                 </li>
               ))}
-              {lib.exercises.length === 0 && <p className="text-gray-500">No exercises yet.</p>}
+              {lib.exercises.length === 0 && <p className="text-[var(--muted)] text-center py-4">No exercises yet.</p>}
             </ul>
           </div>
         </div>
@@ -249,59 +405,18 @@ export default function PlanBuilderPage() {
       </section>
 
       <section className="space-y-6">
-        <h2 className="text-2xl font-semibold text-[var(--foreground)]">Saved Plans</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {plans.map(p => (
-            <div key={p.id} className="bg-[var(--surface)] shadow-1 rounded-lg p-6 transition-all duration-200 hover:shadow-2">
-              <div className="flex items-start justify-between mb-3">
-                <h3 className="font-semibold text-[var(--foreground)] truncate">{p.title}</h3>
-                <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${p.visibility === "public" ? "bg-green-100 text-green-800" : "bg-orange-100 text-orange-800"}`}>
-                  {p.visibility === "public" ? (
-                    <>
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      Public
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                      </svg>
-                      Private
-                    </>
-                  )}
-                </span>
-              </div>
-              {p.description && (
-                <p className="text-sm text-[var(--muted)] mb-3 line-clamp-2">{p.description}</p>
-              )}
-              <div className="flex items-center justify-between text-sm text-[var(--muted)] mb-4">
-                <span>{p.items.length} items</span>
-                <span>{new Date(p.updatedAt).toLocaleDateString()}</span>
-              </div>
-              <div className="flex gap-2">
-                <button 
-                  className="flex-1 rounded-lg bg-[var(--accent)] text-[var(--accent-contrast)] px-4 py-2 text-sm font-medium shadow-1 hover:shadow-2 transition-all duration-200"
-                  onClick={() => editPlan(p)}
-                >
-                  Edit
-                </button>
-                <button 
-                  className="rounded-lg bg-[var(--surface)] text-[var(--error)] border border-[var(--border)] px-4 py-2 text-sm font-medium shadow-1 hover:shadow-2 transition-all duration-200"
-                  onClick={() => deletePlan(p.id)}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
-          {plans.length === 0 && (
-            <div className="col-span-full text-center py-12">
-              <p className="text-[var(--muted)] text-lg">No saved plans yet.</p>
-              <p className="text-[var(--muted)] text-sm mt-2">Create your first training plan above!</p>
-            </div>
-          )}
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold text-[var(--foreground)] mb-4">View Your Plans</h2>
+          <p className="text-[var(--muted)] mb-6">Manage and edit your saved training plans</p>
+          <a 
+            href="/plans" 
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[var(--surface)] text-[var(--foreground)] border border-[var(--border)] font-medium shadow-1 hover:shadow-2 transition-all duration-200"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+            </svg>
+            View All Plans
+          </a>
         </div>
       </section>
     </div>

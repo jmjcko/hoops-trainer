@@ -70,12 +70,9 @@ export default function Home() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto py-12 space-y-12">
+    <div className="max-w-6xl mx-auto py-8 space-y-8">
       {/* Hero Section */}
       <div className="text-center space-y-6">
-        <h1 className="text-5xl font-bold text-[var(--foreground)]">
-          Welcome to HOOPS Trainer
-        </h1>
         <p className="text-xl text-[var(--muted)] max-w-2xl mx-auto">
           Build your personalized basketball training plans, video tutorials, and expert exercises.
         </p>
@@ -91,6 +88,12 @@ export default function Home() {
             className="px-6 py-3 rounded-lg bg-[var(--surface)] text-[var(--foreground)] border border-[var(--border)] font-medium shadow-1 hover:shadow-2 transition-all duration-200"
           >
             Create Plan
+          </a>
+          <a 
+            href="/plans" 
+            className="px-6 py-3 rounded-lg bg-[var(--surface)] text-[var(--foreground)] border border-[var(--border)] font-medium shadow-1 hover:shadow-2 transition-all duration-200"
+          >
+            View Plans
           </a>
         </div>
       </div>

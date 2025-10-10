@@ -16,6 +16,7 @@ function createId(prefix: string = "id"): string {
 export default function ContentManagementPage() {
   const [lib, setLib] = useState<LibraryState>({ videos: [], exercises: [] });
   const [videoUrl, setVideoUrl] = useState("");
+  const [videoTitle, setVideoTitle] = useState("");
   const [videoCategory, setVideoCategory] = useState("");
   const [videoVisibility, setVideoVisibility] = useState<"public" | "private">("public");
   const [videoError, setVideoError] = useState<string | null>(null);
@@ -41,8 +42,11 @@ export default function ContentManagementPage() {
   const [isUpdatingTitles, setIsUpdatingTitles] = useState(false);
 
   useEffect(() => {
-    setLib(loadVisibleLibrary());
-    setResources(loadResources());
+    const loadData = async () => {
+      setLib(await loadVisibleLibrary());
+      setResources(loadResources());
+    };
+    loadData();
   }, []);
 
   const handleAddVideo = async () => {
@@ -84,14 +88,15 @@ export default function ContentManagementPage() {
         id: idBase,
         url,
         platform,
-        title,
+        title: videoTitle.trim() || title,
         category: videoCategory.trim() || undefined,
         visibility: videoVisibility,
       };
       
-      const updated = upsertVideo(item);
+      const updated = await upsertVideo(item);
       setLib(updated);
       setVideoUrl("");
+      setVideoTitle("");
       setVideoCategory("");
       setVideoVisibility("public");
       setVideoError(null);
@@ -100,7 +105,7 @@ export default function ContentManagementPage() {
     }
   };
 
-  const handleAddExercise = () => {
+  const handleAddExercise = async () => {
     if (!exerciseTitle.trim()) return;
     const ex: ExerciseItem = {
       id: createId("ex"),
@@ -109,7 +114,7 @@ export default function ContentManagementPage() {
       description: exerciseDesc.trim() || undefined,
       visibility: exerciseVisibility,
     };
-    const updated = upsertExercise(ex);
+    const updated = await upsertExercise(ex);
     setLib(updated);
     setExerciseTitle("");
     setExerciseDesc("");
@@ -317,8 +322,7 @@ export default function ContentManagementPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto w-full py-10 space-y-10">
-      <h1 className="text-4xl font-bold text-[var(--foreground)]">Content Management</h1>
+    <div className="max-w-5xl mx-auto w-full py-8 space-y-8">
 
       <section className="space-y-6">
         <div className="flex items-center justify-between">
@@ -333,35 +337,43 @@ export default function ContentManagementPage() {
             </button>
           )}
         </div>
-        <div className="flex flex-col gap-4 sm:flex-row">
+        <div className="space-y-4">
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <input
+              className="flex-1 rounded-lg border border-[var(--border)] px-4 py-3 bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent shadow-1 transition-all duration-200"
+              placeholder="Paste YouTube, Shorts, Facebook URL"
+              value={videoUrl}
+              onChange={e => setVideoUrl(e.target.value)}
+            />
+            <input
+              className="flex-1 rounded-lg border border-[var(--border)] px-4 py-3 bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent shadow-1 transition-all duration-200"
+              placeholder="Category (e.g., shooting, dribbling)"
+              list="category-options"
+              value={videoCategory}
+              onChange={e => setVideoCategory(e.target.value)}
+            />
+            <select
+              className="rounded-lg border border-[var(--border)] px-4 py-3 bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent shadow-1 transition-all duration-200"
+              value={videoVisibility}
+              onChange={e => setVideoVisibility(e.target.value as "public" | "private")}
+            >
+              <option value="public">Public</option>
+              <option value="private">Private</option>
+            </select>
+            <button 
+              className="rounded-lg bg-[var(--accent)] text-[var(--accent-contrast)] px-6 py-3 font-medium shadow-2 hover:shadow-3 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
+              onClick={handleAddVideo}
+              disabled={isLoadingVideo}
+            >
+              {isLoadingVideo ? "Fetching title..." : "Add Video"}
+            </button>
+          </div>
           <input
-            className="flex-1 rounded-lg border border-[var(--border)] px-4 py-3 bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent shadow-1 transition-all duration-200"
-            placeholder="Paste YouTube, Shorts, Facebook URL"
-            value={videoUrl}
-            onChange={e => setVideoUrl(e.target.value)}
+            className="w-full rounded-lg border border-[var(--border)] px-4 py-3 bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent shadow-1 transition-all duration-200"
+            placeholder="Video title (optional - will auto-detect for YouTube)"
+            value={videoTitle}
+            onChange={e => setVideoTitle(e.target.value)}
           />
-          <input
-            className="flex-1 rounded-lg border border-[var(--border)] px-4 py-3 bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent shadow-1 transition-all duration-200"
-            placeholder="Category (e.g., shooting, dribbling)"
-            list="category-options"
-            value={videoCategory}
-            onChange={e => setVideoCategory(e.target.value)}
-          />
-          <select
-            className="rounded-lg border border-[var(--border)] px-4 py-3 bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent shadow-1 transition-all duration-200"
-            value={videoVisibility}
-            onChange={e => setVideoVisibility(e.target.value as "public" | "private")}
-          >
-            <option value="public">Public</option>
-            <option value="private">Private</option>
-          </select>
-          <button 
-            className="rounded-lg bg-[var(--accent)] text-[var(--accent-contrast)] px-6 py-3 font-medium shadow-2 hover:shadow-3 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
-            onClick={handleAddVideo}
-            disabled={isLoadingVideo}
-          >
-            {isLoadingVideo ? "Fetching title..." : "Add Video"}
-          </button>
         </div>
         <datalist id="category-options">
           <option value="shooting" />

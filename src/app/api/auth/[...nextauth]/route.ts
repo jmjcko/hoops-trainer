@@ -12,7 +12,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       authorization: {
         params: {
-          scope: "openid email profile"
+          scope: "openid email profile https://www.googleapis.com/auth/userinfo.profile"
         }
       }
     })
@@ -32,10 +32,16 @@ if (process.env.APPLE_ID && process.env.APPLE_SECRET) {
 const handler = NextAuth({
   providers,
   callbacks: {
-    async session({ session }) {
+    async session({ session, token }) {
+      if (token.picture) {
+        session.user.image = token.picture;
+      }
       return session
     },
-    async jwt({ token }) {
+    async jwt({ token, account, profile }) {
+      if (account && profile) {
+        token.picture = profile.picture;
+      }
       return token
     },
   },

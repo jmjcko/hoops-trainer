@@ -144,7 +144,7 @@ export default function Home() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {resources.map((resource, index) => (
+            {resources.map((resource) => (
               <div key={resource.id} className="bg-[var(--surface)] shadow-1 rounded-lg p-6 hover:shadow-2 transition-all duration-200">
                 <div className="flex items-center gap-3 mb-4">
                   <div className={`w-10 h-10 ${getPlatformColor(resource.platform)} rounded-full flex items-center justify-center`}>

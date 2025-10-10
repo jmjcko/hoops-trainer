@@ -160,7 +160,7 @@ export default function ContentManagementPage() {
         isVerified: false
       });
       setResourceError(null);
-    } catch (error) {
+    } catch {
       setResourceError("Failed to add resource");
     }
   };

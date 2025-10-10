@@ -1,13 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { extractYouTubeId, buildFacebookEmbedUrl, detectVideoPlatform, getVideoSourceInfo } from "@/lib/url";
+import { detectVideoPlatform } from "@/lib/url";
 import { loadVisibleLibrary, removeVideo, removeExercise } from "@/lib/storage";
 import { LibraryState } from "@/types/library";
 
-function createId(prefix: string = "id"): string {
-  return `${prefix}_${Math.random().toString(36).slice(2, 10)}`;
-}
 
 export default function LibraryPage() {
   const [lib, setLib] = useState<LibraryState>({ videos: [], exercises: [] });
@@ -32,18 +29,6 @@ export default function LibraryPage() {
     setLib(updated);
   };
 
-  const videoEmbeds = useMemo(() => {
-    return lib.videos.map(v => {
-      if (v.platform === "youtube") {
-        const yt = extractYouTubeId(v.url);
-        if (yt) return { id: v.id, src: `https://www.youtube.com/embed/${yt}` };
-      }
-      if (v.platform === "facebook") {
-        return { id: v.id, src: buildFacebookEmbedUrl(v.url) };
-      }
-      return { id: v.id, src: v.url };
-    });
-  }, [lib.videos]);
 
   const categories = useMemo(() => {
     const defaults = ["shooting", "dribbling", "passing", "defense", "conditioning", "footwork"];

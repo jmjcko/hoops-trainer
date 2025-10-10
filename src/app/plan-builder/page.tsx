@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { extractYouTubeId, buildFacebookEmbedUrl, detectVideoPlatform, getVideoSourceInfo } from "@/lib/url";
+import { detectVideoPlatform } from "@/lib/url";
 import { loadVisibleLibrary, upsertPlan } from "@/lib/storage";
 import { LibraryState, TrainingPlan, TrainingUnitItem } from "@/types/library";
 
@@ -70,13 +70,6 @@ export default function PlanBuilderPage() {
     setEditingPlan(null);
   };
 
-  const editPlan = (plan: TrainingPlan) => {
-    setEditingPlan(plan);
-    setTitle(plan.title);
-    setDescription(plan.description || "");
-    setVisibility(plan.visibility);
-    setCurrentItems(plan.items);
-  };
 
 
   const startNewPlan = () => {

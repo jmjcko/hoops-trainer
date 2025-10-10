@@ -10,11 +10,6 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      authorization: {
-        params: {
-          scope: "openid email profile https://www.googleapis.com/auth/userinfo.profile"
-        }
-      }
     })
   );
 }
@@ -33,15 +28,9 @@ const handler = NextAuth({
   providers,
   callbacks: {
     async session({ session, token }) {
-      if (token.picture) {
-        session.user.image = token.picture;
-      }
       return session
     },
-    async jwt({ token, account, profile }) {
-      if (account && profile) {
-        token.picture = profile.picture;
-      }
+    async jwt({ token }) {
       return token
     },
   },

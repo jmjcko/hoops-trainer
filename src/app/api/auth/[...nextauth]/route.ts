@@ -5,15 +5,14 @@ import AppleProvider from "next-auth/providers/apple"
 const providers = [];
 
 // Only add Google provider if credentials are available
-// Temporarily disabled for testing
-// if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-//   providers.push(
-//     GoogleProvider({
-//       clientId: process.env.GOOGLE_CLIENT_ID,
-//       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-//     })
-//   );
-// }
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  providers.push(
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    })
+  );
+}
 
 // Only add Apple provider if credentials are available
 if (process.env.APPLE_ID && process.env.APPLE_SECRET) {

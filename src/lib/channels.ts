@@ -1,4 +1,3 @@
-import { VideoItem } from "@/types/library";
 import { loadVisibleLibrary } from "./storage";
 import { extractYouTubeId } from "./url";
 
@@ -137,13 +136,13 @@ export async function fetchChannelInfoFromVideoId(videoId: string, apiKey?: stri
 }
 
 // Get all unique YouTube channels from the user's library
-export function getChannelsFromLibrary(): ChannelInfo[] {
+export async function getChannelsFromLibrary(): Promise<ChannelInfo[]> {
   // Only run on client side
   if (typeof window === "undefined") {
     return [];
   }
   
-  const library = loadVisibleLibrary();
+  const library = await loadVisibleLibrary();
   const channelMap = new Map<string, ChannelInfo>();
 
   library.videos.forEach(video => {
@@ -189,7 +188,7 @@ export function getChannelsFromLibrary(): ChannelInfo[] {
 
 // Enhanced function to get channel info with better YouTube URL handling
 export async function getEnhancedChannelsFromLibrary(): Promise<ChannelInfo[]> {
-  const library = loadVisibleLibrary();
+  const library = await loadVisibleLibrary();
   const channelMap = new Map<string, ChannelInfo>();
 
   // Process all videos
@@ -244,8 +243,8 @@ export async function getEnhancedChannelsFromLibrary(): Promise<ChannelInfo[]> {
 }
 
 // Get channel info for a specific channel ID
-export function getChannelInfo(channelId: string): ChannelInfo | null {
-  const channels = getChannelsFromLibrary();
+export async function getChannelInfo(channelId: string): Promise<ChannelInfo | null> {
+  const channels = await getChannelsFromLibrary();
   return channels.find(channel => channel.channelId === channelId) || null;
 }
 

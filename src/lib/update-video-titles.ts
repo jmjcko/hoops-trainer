@@ -3,7 +3,7 @@ import { fetchYouTubeVideoTitle, extractVideoIdFromUrl } from "./youtube-title";
 
 // Function to update titles for existing videos that don't have them
 export async function updateVideoTitles(): Promise<void> {
-  const library = loadVisibleLibrary();
+  const library = await loadVisibleLibrary();
   
   for (const video of library.videos) {
     if (video.platform === "youtube" && !video.title) {
@@ -26,7 +26,7 @@ export async function updateVideoTitles(): Promise<void> {
 
 // Function to update a specific video's title
 export async function updateVideoTitle(videoId: string): Promise<string | null> {
-  const library = loadVisibleLibrary();
+  const library = await loadVisibleLibrary();
   const video = library.videos.find(v => v.id === videoId);
   
   if (!video || video.platform !== "youtube") {

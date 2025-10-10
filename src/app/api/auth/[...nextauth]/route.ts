@@ -27,7 +27,7 @@ if (process.env.APPLE_ID && process.env.APPLE_SECRET) {
 const handler = NextAuth({
   providers,
   callbacks: {
-    async session({ session, token }) {
+    async session({ session }) {
       return session
     },
     async jwt({ token }) {

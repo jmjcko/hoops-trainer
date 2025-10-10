@@ -313,7 +313,7 @@ export default function ContentManagementPage() {
     try {
       await updateVideoTitles();
       // Reload the library to show updated titles
-      setLib(loadVisibleLibrary());
+      setLib(await loadVisibleLibrary());
     } catch (error) {
       console.error('Error updating video titles:', error);
     } finally {
